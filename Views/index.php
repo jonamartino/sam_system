@@ -26,8 +26,8 @@
                                                 <label for="usuario" >Usuario</label>
                                             </div>
                                             <div class="form-floating mb-3">
-                                                <input class="form-control" id="password" name="password" type="password" placeholder="Ingrese Contraseña" />
-                                                <label for="password">Contraseña</label>
+                                                <input class="form-control" id="clave" name="clave" type="password" placeholder="Ingrese Contraseña" />
+                                                <label for="clave">Contraseña</label>
                                             </div>
                                             <div class="alert alert-danger text-center d-none" id="alerta" role="alert">
                                                 
