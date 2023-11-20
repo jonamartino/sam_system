@@ -47,13 +47,7 @@ function frmLogin(e) {
         http.send(new FormData(frm));
         http.onreadystatechange = function(){
             if(this.readyState == 4 && this.status == 200) {
-                const res = JSON.parse(this.responseText);
-                if(res == "ok") {
-                    window.location = base_url + "Usuarios";
-                }else{
-                    document.getElementById("alerta").classList.remove("d-none");
-                    document.getElementById("alerta").innerHTML = res;
-                }
+                console.log(this.responseText);
             }  
         }
     }
