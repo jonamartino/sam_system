@@ -49,6 +49,10 @@
                                     <a class="nav-link" href="#"><i class="fa-solid fa-user-group mr-2"></i>Roles</a>
                                 </nav>
                             </div>
+                            <a class="nav-link" href="<?php echo base_url; ?>Maquinas">
+                                <div class="sb-nav-link-icon"><i class="fa-solid fa-gears"></i></div>
+                                Maquinas
+                            </a>
                             
                         </div>
                     </div>
