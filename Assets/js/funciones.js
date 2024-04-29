@@ -1,6 +1,6 @@
 
-// Usuarios
-let tblUsuarios, tblMaquinas;
+// Tablas Usuarios, Maquinas
+let tblUsuarios, tblMaquinas, tblPersonas;
 document.addEventListener("DOMContentLoaded", function () {
     tblUsuarios = $('#tblUsuarios').DataTable({
         ajax: {
@@ -33,7 +33,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
 })
-
 document.addEventListener("DOMContentLoaded", function () {
     tblMaquinas = $('#tblMaquinas').DataTable({
         ajax: {
@@ -45,10 +44,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 'data': 'id_maquina'
             },
             {
-                'data': 'id_local'
+                'data': 'nombre'
             },
             {
-                'data': 'maq_nombre'
+                'data': 'tipo'
             },
             {
                 'data': 'celda_nombre'
@@ -63,7 +62,37 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
 })
+document.addEventListener("DOMContentLoaded", function () {
+    tblPersonas = $('#tblPersonas').DataTable({
+        ajax: {
+            url: base_url + "Personas/listar",
+            dataSrc: ''
+        },
+        columns: [
+            {
+                'data': 'legajo'
+            },
+            {
+                'data': 'nombre_completo'
+            },
+            {
+                'data': 'dni'
+            },
+            {
+                'data': 'mail'
+            },
+            {
+                'data': 'estado'
+            },
+            {
+                'data': 'acciones'
+            }
+        ]
+    });
 
+})
+
+// Usuarios
 function frmLogin(e) {
     e.preventDefault();
     const usuario = document.getElementById("usuario");
@@ -263,21 +292,21 @@ function btnReingresarUser(id) {
 // Fin Usuarios
 
 // Maquinas
-
 function frmMaquina() {
     document.getElementById("title").innerHTML = "Nueva Maquina";
     document.getElementById("btn-accion").innerHTML = "Registrar";
     document.getElementById("frmMaquina").reset();
     $("#nueva-maquina").modal("show");
     document.getElementById("id_maquina").value = "";
+
 }
 function registrarMaquina(e) {
     e.preventDefault();
-    const id_local = document.getElementById("id_local");
-    const maq_nombre = document.getElementById("maq_nombre");
+    const tipo = document.getElementById("tipo");
+    const nombre = document.getElementById("nombre");
     const celda_nombre = document.getElementById("celda_nombre");
-    console.log(id_local.value, maq_nombre.value, celda_nombre.value);
-    if (id_local.value == "" || maq_nombre.value == "" || celda_nombre.value == "") {
+    console.log(tipo.value, nombre.value, celda_nombre.value);
+    if (tipo.value == "" || nombre.value == "" || celda_nombre.value == "") {
         Swal.fire({
             position: 'top-center',
             icon: 'error',
@@ -294,7 +323,6 @@ function registrarMaquina(e) {
         http.onreadystatechange = function () {
             if (this.readyState == 4 && this.status == 200) {
                 const res = JSON.parse(this.responseText);
-                console.log(res);
                 if (res == "si") {
                     Swal.fire({
                         position: 'top-center',
@@ -341,8 +369,8 @@ function btnEditarMaquina(id_maquina) {
         if (this.readyState == 4 && this.status == 200) {
             const res = JSON.parse(this.responseText);
             document.getElementById("id_maquina").value = res.id_maquina;
-            document.getElementById("maq_nombre").value = res.maq_nombre;
-            document.getElementById("id_local").value = res.id_local;
+            document.getElementById("nombre").value = res.nombre;
+            document.getElementById("tipo").value = res.id_tipo;
             document.getElementById("celda_nombre").value = res.id_celda;
             console.log(document.getElementById("celda_nombre"));
             $("#nueva-maquina").modal("show");
@@ -388,7 +416,6 @@ function btnEliminarMaquina(id_maquina) {
         }
     });
 }
-
 function btnReingresarMaquina(id_maquina) {
     Swal.fire({
         title: "¿Está seguro de reingresar la maquina?",
@@ -428,3 +455,191 @@ function btnReingresarMaquina(id_maquina) {
     });
 }
 // Fin Maquinas
+
+// Personas
+function frmPersona() {
+    document.getElementById("title").innerHTML = "Nueva Persona";
+    document.getElementById("btn-accion").innerHTML = "Registrar";
+    document.getElementById("frmPersona").reset();
+    $("#nueva-persona").modal("show");
+    document.getElementById("legajo").value = "";
+
+}
+function myCheck() {
+    var checkBox = document.getElementById("discriminator");
+    var text = document.getElementById("form-tecnico");
+    if (checkBox.checked == true) {
+        text.style.display = "block";
+    } else {
+        text.style.display = "none";
+    }
+}
+function registrarPersona(e) {
+    e.preventDefault();
+    const legajo = document.getElementById("legajo");
+    const dni = document.getElementById("dni");
+    const nombre = document.getElementById("nombre");
+    const apellido = document.getElementById("apellido");
+    const mail = document.getElementById("mail");
+    const celular = document.getElementById("celular");
+    const id_turno = document.getElementById("id_turno");
+    const fecha_nacimiento = document.getElementById("fecha_nacimiento");
+    const especialidad = document.getElementById("especialidad");
+    const discriminator = document.getElementById("discriminator");
+    console.log("discriminator.value= ", discriminator.checked, "legajo= ", legajo.value, ",", dni.value, nombre.value, apellido.value, mail.value, celular.value, id_turno.value, fecha_nacimiento.value);
+    if (dni.value == "" || apellido.value == "" || nombre.value == "" ||
+        mail.value == "" || celular.value == "" || id_turno.value == "" ||
+        fecha_nacimiento.value == "") {
+        Swal.fire({
+            position: 'top-center',
+            icon: 'error',
+            title: 'Todos los campos son obligatorios',
+            showConfirmButton: false,
+            timer: 3000
+        })
+    } else {
+        const url = base_url + "Personas/registrar";
+        const frm = document.getElementById("frmPersona");
+        const http = new XMLHttpRequest();
+        http.open("POST", url, true);
+        http.send(new FormData(frm));
+        http.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                console.log(this.responseText);
+                const res = JSON.parse(this.responseText);
+                if (res == "si") {
+                    Swal.fire({
+                        position: 'top-center',
+                        icon: 'success',
+                        title: 'Empleado registrado con éxito',
+                        showConfirmButton: false,
+                        timer: 3000
+                    })
+                    frm.reset();
+                    $("#nueva-persona").modal("hide");
+                    tblPersonas.ajax.reload();
+                } else if (res == "modificado") {
+                    Swal.fire({
+                        position: 'top-center',
+                        icon: 'success',
+                        title: 'Empleado modificado con éxito',
+                        showConfirmButton: false,
+                        timer: 3000
+                    })
+                    frm.reset();
+                    $("#nueva-persona").modal("hide");
+                    tblPersonas.ajax.reload();
+                } else {
+                    Swal.fire({
+                        position: 'top-center',
+                        icon: 'error',
+                        title: res,
+                        showConfirmButton: false,
+                        timer: 3000
+                    })
+                }
+            }
+        }
+    }
+}
+function btnEditarPersona(legajo) {
+    document.getElementById("title").innerHTML = "Actualizar Empleado";
+    document.getElementById("btn-accion").innerHTML = "Modificar";
+    const url = base_url + "Personas/editar/" + legajo;
+    const http = new XMLHttpRequest();
+    http.open("GET", url, true);
+    http.send();
+    http.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+            const res = JSON.parse(this.responseText);
+            console.log(res);
+            document.getElementById("legajo").value = res.legajo;
+            document.getElementById("dni").value = res.dni;
+            document.getElementById("nombre").value = res.nombre;
+            document.getElementById("apellido").value = res.apellido;
+            document.getElementById("mail").value = res.mail;
+            document.getElementById("celular").value = res.celular;
+            document.getElementById("id_turno").value = res.id_turno;
+            document.getElementById("fecha_nacimiento").value = res.fecha_nacimiento;
+            $("#nueva-persona").modal("show");
+
+        }
+    }
+}
+function btnEliminarPersona(legajo) {
+    Swal.fire({
+        title: "¿Está seguro de desactivar el empleado?",
+        text: "El empleado no se eliminará de forma permanente, solo cambiará el estado a inactivo",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Confirmar",
+        cancelButtonText: "Cancelar"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const url = base_url + "Personas/eliminar/" + legajo;
+            const http = new XMLHttpRequest();
+            http.open("GET", url, true);
+            http.send();
+            http.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    const res = JSON.parse(this.responseText);
+                    if (res == "ok") {
+                        Swal.fire(
+                            'Exito',
+                            'El empleado ha sido desactivada',
+                            'success'
+                        )
+                        tblPersonas.ajax.reload();
+                    } else {
+                        Swal.fire(
+                            'Error!',
+                            res,
+                            'error'
+                        );
+                    }
+                }
+            }
+        }
+    });
+}
+function btnReingresarPersona(legajo) {
+    Swal.fire({
+        title: "¿Está seguro de activar el empleado?",
+        text: "El empleado pasará a estado 'activo' ",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Confirmar",
+        cancelButtonText: "Cancelar"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const url = base_url + "Personas/reingresar/" + legajo;
+            const http = new XMLHttpRequest();
+            http.open("GET", url, true);
+            http.send();
+            http.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    const res = JSON.parse(this.responseText);
+                    if (res == "ok") {
+                        Swal.fire(
+                            'Exito',
+                            'El empleado ha sido activado',
+                            'success'
+                        )
+                        tblPersonas.ajax.reload();
+                    } else {
+                        Swal.fire(
+                            'Error!',
+                            res,
+                            'error'
+                        );
+                    }
+                }
+            }
+        }
+    });
+}
+// Fin Personas

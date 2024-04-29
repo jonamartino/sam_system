@@ -10,6 +10,7 @@ class Maquinas extends Controller{
     public function index()
     {
         $data['celdas'] = $this->model->getCeldas();
+        $data['tipo_maquina'] = $this->model->getTipo();
         $this->views->getView($this, "index", $data);
     }
     public function listar()
@@ -32,24 +33,22 @@ class Maquinas extends Controller{
     }
     public function registrar()
     {
-        $id_local = $_POST['id_local'];
-        $maq_nombre = $_POST['maq_nombre'] ;
+        $id_tipo = $_POST['tipo'];
+        $nombre = $_POST['nombre'] ;
         $celda_nombre = $_POST['celda_nombre'] ;
         $id_maquina = $_POST['id_maquina'];
-        if(empty($id_local) || empty($maq_nombre) || empty($celda_nombre)){
+        if(empty($id_tipo) || empty($nombre) || empty($celda_nombre)){
             $msg = "Todos los campos son obligatorios";
         }else{
             if ($id_maquina == "") {
-                    $data = $this->model->registrarMaquina($id_local, $maq_nombre, $celda_nombre);
+                    $data = $this->model->registrarMaquina($id_tipo, $nombre, $celda_nombre);
                     if($data == "OK"){
                         $msg = "si";
-                    } else if ($data == "existe") {
-                        $msg = "La maquina ya existe";
                     } else { 
                         $msg = "Error al registrar la maquina";
                     }
         }else{
-            $data = $this->model->modificarMaquina($id_local, $maq_nombre, $celda_nombre, $id_maquina);
+            $data = $this->model->modificarMaquina($id_tipo, $nombre, $celda_nombre, $id_maquina);
             if($data == "modificado"){
                 $msg = "modificado";
             } else if ($data == "existe") {

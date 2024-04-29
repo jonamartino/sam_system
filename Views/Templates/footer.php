@@ -30,5 +30,6 @@
     const base_url = "<?php echo base_url; ?>";
 </script>
 <script src="<?php echo base_url;?>Assets/js/funciones.js"></script>
+<script src="<?php echo base_url;?>Assets/js/funciones-preventivo.js"></script>
 </body>
 </html>

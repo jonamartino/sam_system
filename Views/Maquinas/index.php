@@ -6,9 +6,9 @@
 <table class="table table-light" id="tblMaquinas">
     <thead class="thead-dark">
         <tr>
-            <th>id</th>
             <th>Numero Maquina</th>  
             <th>Maquina</th>
+            <th>Tipo</th>
             <th>Celda</th>
             <th>Estado</th>   
             <th></th> 
@@ -28,19 +28,26 @@
             </div>
             <div class="modal-body">
                 <p><form method="POST" id="frmMaquina">
-                    <div class="form-group">
-                        <label for="maq_nombre">Nombre de Maquina</label>
-                        <input name="id_maquina" id="id_maquina" type="hidden">
-                        <input name="maq_nombre" id="maq_nombre" class="form-control" type="text"  placeholder="Nombre del equipo">
+                <div class="form-group">
+                        <label for="nombre">Nombre Maquina</label>
+                        <input  name="id_maquina" id="id_maquina" type="hidden">
+                        <input  name="nombre" id="nombre" class="form-control" type="text" placeholder="Nombre o descripcion de la Maquina">
                     </div>
-                    <div class="form-group">
-                        <label for="id_local">Numero Identificador de Maquina</label>
-                        <input  name="id_local" id="id_local" class="form-control" type="text" placeholder="Numero unico de identifiacion">
+                <div class="form-group">
+                        <label for="tipo">Tipo</label>
+                        <select id="tipo" class="form-control" type="text" name="tipo" placeholder="tipo">
+                        <label>Tipo</label>
+                        <option value="" disabled selected >Elegir Tipo</option>
+                        <?php foreach ($data['tipo_maquina'] as $row) { ?>
+                            <option value="<?php echo $row['id_tipo']; ?>"> <?php echo $row['nombre']; ?> </option>
+                        <?php } ?>
+                        <select>
                     </div>
                     <div class="form-group">
                         <label for="celda_nombre">Celda</label>
                         <select id="celda_nombre" class="form-control" type="text" name="celda_nombre" placeholder="Celda">
                         <label>Celda</label>
+                        <option value="" disabled selected >Elegir Celda</option>
                         <?php foreach ($data['celdas'] as $row) { ?>
                             <option value="<?php echo $row['id_celda']; ?>"> <?php echo $row['id_celda']," - ",$row['celda_nombre']; ?> </option>
                         <?php } ?>

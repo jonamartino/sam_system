@@ -7,7 +7,10 @@ class MaquinasModel extends Query{
     }
  
     public function getMaquinas(){
-        $sql = "SELECT m.id_maquina, m.id_local, m.maq_nombre, m.estado, c.id_celda, c.celda_nombre FROM maquinas m INNER JOIN celdas c ON m.id_celda = c.id_celda";
+        $sql = "SELECT *,m.id_maquina, m.id_tipo, m.nombre, tm.nombre as tipo, m.estado, c.id_celda, c.celda_nombre
+        FROM maquinas m
+        INNER JOIN celdas c ON m.id_celda = c.id_celda
+        INNER JOIN tipo_maquina tm ON m.id_tipo = tm.id_tipo";
         $data = $this->selectAll($sql);
         return $data;   
     }
@@ -17,46 +20,38 @@ class MaquinasModel extends Query{
         $data = $this->selectAll($sql);
         return $data;   
     }
-
-    public function registrarMaquina(int $id_local ,string $maq_nombre, int $id_celda){
-        $this->id_local = $id_local;
-        $this->maq_nombre = $maq_nombre;
+    public function getTipo(){
+        $sql = "SELECT * FROM tipo_maquina";
+        $data = $this->selectAll($sql);
+        return $data;   
+    }
+    public function registrarMaquina(int $id_tipo ,string $nombre, int $id_celda){
+        $this->id_tipo = $id_tipo;
+        $this->nombre = $nombre;
         $this->id_celda = $id_celda;
-        $verificar = "SELECT * FROM maquinas WHERE id_local = '$this->id_local'";
-        $existe = $this->select($verificar);
-        if (empty($existe)) {
-            $sql = "INSERT INTO maquinas(id_local, maq_nombre, id_celda) VALUES (?,?,?)";
-            $datos = array($this->id_local,$this->maq_nombre,$this->id_celda);
-            $data = $this->save($sql,$datos);
-            if($data==1){
-                $res = "OK";
-            } else {
-                $res = "error";
-            }
+        $sql = "INSERT INTO maquinas(id_tipo, nombre, id_celda) VALUES (?,?,?)";
+        $datos = array($this->id_tipo,$this->nombre,$this->id_celda);
+        $data = $this->save($sql,$datos);
+        if($data==1){
+            $res = "OK";
         } else {
-            $res = "existe";
-        }
+            $res = "error";
+        } 
         return $res;
     }
-    public function modificarMaquina(int $id_local, string $maq_nombre, int $id_celda, int $id_maquina){
-        $this->id_local = $id_local;
-        $this->maq_nombre = $maq_nombre;
+    public function modificarMaquina(int $id_tipo ,string $nombre, int $id_celda, int $id_maquina){
+        $this->id_tipo = $id_tipo;
+        $this->nombre = $nombre;
         $this->id_celda = $id_celda;
         $this->id_maquina = $id_maquina;
-        $verificar = "SELECT * FROM maquinas WHERE id_local = '$this->id_local'";
-        $existe = $this->select($verificar);
-        if (empty($existe)) {
-            $sql = "UPDATE maquinas SET id_local = ?, maq_nombre = ?, id_celda = ? WHERE id_maquina = ?";
-            $datos = array($this->id_local, $this->maq_nombre,$this->id_celda,$this->id_maquina);
+            $sql = "UPDATE maquinas SET id_tipo = ?, nombre = ?, id_celda = ? WHERE id_maquina = ?";
+            $datos = array($this->id_tipo, $this->nombre,$this->id_celda,$this->id_maquina);
             $data = $this->save($sql,$datos);
             if($data==1){
                 $res = "modificado";
             } else {
                 $res = "error";
             }
-        } else {
-            $res = "existe";
-        }
         return $res;
     }
 
