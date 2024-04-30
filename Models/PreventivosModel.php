@@ -59,6 +59,19 @@ class PreventivosModel extends Query{
         return $result['id_preventivo'];
     }
     
+    public function vaciarPreventivoTareas(int $id_preventivo){
+      $this->id_preventivo = $id_preventivo;
+      $sql = "DELETE FROM preventivos_tareas WHERE id_preventivo = ?";
+      $datos = array($this->id_preventivo);
+      $data = $this->delete($sql, $datos);
+      if($data==1){
+        $res = "OK";
+    } else {
+        $res = "error";
+    }
+    return $res;
+    }    
+
 
     public function registrarPreventivoTareas(int $id_tareas, int $id_preventivo){
       $this->id_tareas = $id_tareas;
@@ -75,20 +88,17 @@ class PreventivosModel extends Query{
     }
 
 
-    public function modificarPersona(int $legajo, int $dni, string $nombre, string $apellido, string $mail, int $celular, int $id_turno, string $fecha, string $especialidad)
+    public function modificarPreventivo(int $id_preventivo, int $legajo, string $fecha, string $hora, string $descripcion)
     {
-      $fecha_nacimiento = date('Y-m-d', strtotime($fecha));
+      $this->id_preventivo = $id_preventivo;
+      $this->descripcion = $descripcion;
+      $fecha_programada = date('Y-m-d', strtotime($fecha));
+      $hora_programada = date('H:i:s', strtotime($hora));
       $this->legajo = $legajo;
-      $this->dni = $dni;
-      $this->nombre = $nombre;
-      $this->apellido = $apellido;
-      $this->mail = $mail;
-      $this->celular = $celular;
-      $this->id_turno = $id_turno;
-      $this->fecha_nacimiento = $fecha_nacimiento;
-      $this->especialidad = $especialidad;
-        $sql = "UPDATE personas SET dni = ?, nombre = ?, apellido = ?, mail = ?, celular = ?, id_turno = ?, fecha_nacimiento = ?, especialidad = ? WHERE legajo = ?";
-        $datos = array($this->dni,$this->nombre,$this->apellido,$this->mail,$this->celular,$this->id_turno,$this->fecha_nacimiento,$this->especialidad,$this->legajo);
+      $this->fecha_programada = $fecha_programada;
+      $this->hora_programada = $hora_programada;
+        $sql = "UPDATE preventivos SET legajo = ?, fecha_programada = ?, hora_programada = ?, descripcion = ? WHERE id_preventivo = ?";
+        $datos = array($this->legajo,$this->fecha_programada,$this->hora_programada,$this->descripcion,$this->id_preventivo);
         $data = $this->save($sql,$datos);
         if($data==1){
             $res = "modificado";
@@ -104,9 +114,14 @@ class PreventivosModel extends Query{
       return $data;
     }
     public function getPreventivosTareas(int $id_preventivo){
-      $sql = "SELECT * FROM preventivos_tareas WHERE id_preventivo = $id_preventivo";
+      $sql = "SELECT t.id_tarea, t.nombre, pt.id_preventivo FROM preventivos_tareas pt INNER JOIN tareas t ON pt.id_tareas = t.id_tarea WHERE id_preventivo = $id_preventivo";
       $data = $this->selectAll($sql);
       return $data;   
+    }
+    public function getTareasMaquina(int $id_preventivo){
+      $sql = "SELECT t.id_tarea, t.nombre FROM preventivos p INNER JOIN maquinas m ON p.id_maquina = m.id_maquina INNER JOIN tipo_maquina tm ON m.id_tipo = tm.id_tipo INNER JOIN tareas t ON t.id_tipo = tm.id_tipo WHERE p.id_preventivo = $id_preventivo";
+      $data = $this->selectAll($sql);
+      return $data;  
     }
 
     public function accionPreventivo(int $estado, int $id_preventivo){

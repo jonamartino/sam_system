@@ -58,24 +58,30 @@ class Preventivos extends Controller{
                 if($data == "OK"){
                     $id_preventivo = $this->model->getLastInsertedPreventivoId();
                     if (!empty($id_preventivo)) {
+                        $v = $this->model->vaciarPreventivoTareas($id_preventivo);
                         foreach ($tareas as $id_tarea) {
                             $validacionTarea = $this->model->registrarPreventivoTareas($id_tarea, $id_preventivo);                            
                         }
                     }
                     $msg = "si";
                 } else if ($data == "existe") {
-                    $msg = "La persona ya existe";
+                    $msg = "El preventivo ya existe";
                 } else { 
-                    $msg = "Error al registrar la persona";
+                    $msg = "Error al registrar el preventivo";
                 }
         }else{
-            $data = $this->model->modificarPersona($legajo, $dni, $nombre, $apellido, $mail, $celular, $id_turno, $fecha_nacimiento, $especialidad);
+
+            $data = $this->model->modificarPreventivo($id_preventivo, $legajo, $fecha_programada, $hora_programada, $descripcion);
             if($data == "modificado"){
+                $v = $this->model->vaciarPreventivoTareas($id_preventivo);
+                foreach ($tareas as $id_tarea) {
+                    $validacionTarea = $this->model->registrarPreventivoTareas($id_tarea, $id_preventivo);                            
+                }
                 $msg = "modificado";
             } else if ($data == "existe") {
-                $msg = "El empleado ya existe";
+                $msg = "El preventivo ya existe";
             } else { 
-                $msg = "Error al registrar el empleado";
+                $msg = "Error al registrar el preventivo";
             }
         }
         }
@@ -85,6 +91,7 @@ class Preventivos extends Controller{
     public function editar(int $id_preventivo){
         $data = $this->model->editarPreventivo($id_preventivo);
         $data['preventivos_tareas'] = $this->model->getPreventivosTareas($id_preventivo);
+        $data['tareas_maquina'] = $this->model->getTareasMaquina($id_preventivo);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
         die();
     } 

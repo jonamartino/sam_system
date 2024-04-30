@@ -36,12 +36,12 @@ function frmPreventivo() {
   document.getElementById("title").innerHTML = "Nuevo Preventivo";
   document.getElementById("btn-accion").innerHTML = "Registrar";
   document.getElementById("frmPreventivo").reset();
+  document.getElementById("id_maquina").value = "";
+  document.getElementById("id_maquina").disabled = false;
+  document.getElementById("id_tarea").innerHTML = ""; // Limpiar el contenido actual
   $("#nuevo-preventivo").modal("show");
   document.getElementById("id_preventivo").value = "";
-  document.getElementById("id_seleccion").value = "";
-
 }
-
 // Función para obtener las tareas asociadas a la máquina seleccionada
 function getTareas() {
   var id_seleccion = document.getElementById("id_maquina").value;
@@ -67,13 +67,13 @@ function getTareas() {
         }
       }
     };
-    console.log("send:", id_seleccion);
     http.send();
   }
 }
 function registrarPreventivo(e) {
   e.preventDefault();
   const id_maquina = document.getElementById("id_maquina");
+  console.log(id_maquina.value);
   const legajo = document.getElementById("legajo");
   const fecha_programada = document.getElementById("fecha_programada");
   const hora_programada = document.getElementById("hora_programada");
@@ -81,7 +81,7 @@ function registrarPreventivo(e) {
   const descripcion = document.getElementById("descripcion");
   const selectedOptions = selectElement.selectedOptions;
   const selectedValues = Array.from(selectedOptions).map(option => option.value);
-  console.log(selectedValues);
+  console.log(selectedValues, id_maquina.value, legajo.value, fecha_programada.value, hora_programada.value, descripcion.value);
   if (id_maquina.value == "" || legajo.value == "" || fecha_programada.value == "" ||
     hora_programada.value == "" || descripcion.value == "") {
     Swal.fire({
@@ -154,21 +154,40 @@ function btnEditarPreventivo(id_preventivo) {
   http.onreadystatechange = function () {
     if (this.readyState == 4 && this.status == 200) {
       const res = JSON.parse(this.responseText);
+      document.getElementById("id_tarea").innerHTML = ""; // Limpiar el contenido actual
       document.getElementById("id_preventivo").value = res.id_preventivo;
       document.getElementById("id_maquina").value = res.id_maquina;
-      document.getElementById("id_maquina").disabled = true;
       document.getElementById("legajo").value = res.legajo;
       document.getElementById("fecha_programada").value = res.fecha_programada;
       document.getElementById("hora_programada").value = res.hora_programada;
       document.getElementById("descripcion").value = res.descripcion;
-      console.log(res['preventivos_tareas']);
-      document.getElementById("id_tarea").value = res['preventivos_tareas'];
+      // Obtener el elemento select
+      var select = document.getElementById("id_tarea");
+      // Arreglo para almacenar IDs de tareas seleccionadas
+      var idsSeleccionados = [];
+      // Recorrer las tareas disponibles
+      res['tareas_maquina'].forEach(function (tarea) {
+        var opt = tarea.nombre;
+        var el = document.createElement("option");
+        el.textContent = opt;
+        el.value = tarea.id_tarea; // Asignar el ID de la tarea como valor
+        // Verificar si la tarea está seleccionada
+        if (res['preventivos_tareas'].some(function (selTarea) {
+          return selTarea.id_tarea === tarea.id_tarea;
+        })) {
+          el.selected = true;
+          idsSeleccionados.push(tarea.id_tarea); // Agregar ID al arreglo de seleccionados
+        }
+        // Agregar la opción al select
+        select.appendChild(el);
+      });
+      // Mostrar el modal después de completar la construcción del select
       $("#nuevo-preventivo").modal("show");
-
+      // Aquí puedes usar 'idsSeleccionados' para manejar los IDs seleccionados según sea necesario
+      console.log("IDs de tareas seleccionadas:", idsSeleccionados);
     }
   }
 }
-
 function btnEliminarPreventivo(id_preventivo) {
   Swal.fire({
     title: "¿Está seguro de desactivar el preventivo?",

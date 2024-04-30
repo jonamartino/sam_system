@@ -75,6 +75,7 @@
                             <option value="<?php echo $row['id_tarea']; ?>"> <?php echo $row['id_tarea']," - ",$row['nombre']; ?> </option>
                         <?php } ?>
                         </select>
+                        <input id="id_tarea1" name="id_tarea1[]" type="hidden">
                     </div>
                 <button class="btn btn-primary" type="button" onclick="registrarPreventivo(event);" id="btn-accion">Registrar</button>
                 <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Cancelar</button>

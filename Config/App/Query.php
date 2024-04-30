@@ -34,7 +34,18 @@ Class Query extends Conexion{
         }
         return $res;
     }
-
+    public function delete(string $sql, array $datos) {
+        $this->sql = $sql;
+        $this->datos = $datos;
+        $delete = $this->con->prepare($this->sql);
+        $data = $delete->execute($this->datos);
+        if ($data) {
+            $deleted_rows = $delete->rowCount(); // Obtener el número de filas eliminadas
+            return $deleted_rows;
+        } else {
+            return 0;
+        }
+    }
 
 }
 ?>
