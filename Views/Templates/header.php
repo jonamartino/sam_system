@@ -15,7 +15,9 @@
     <body class="sb-nav-fixed">
         <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
             <!-- Navbar Brand-->
-            <a class="navbar-brand ps-3" href="index.html">SAM</a>
+            <a class="navbar-brand ps-3" href="<?php echo base_url; ?>">
+                <img src="Assets/img/SAM3.png" alt="Logo de SAM" height="140">
+            </a>
             <!-- Sidebar Toggle-->
             <button class="btn btn-link btn-sm order-1 order-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
             <!-- Navbar-->
@@ -59,7 +61,7 @@
                                 <div class="sb-nav-link-icon"><i class="fa-solid fa-wrench"></i></div>
                                 Preventivos
                             </a>
-                            <a class="nav-link" href="<?php echo base_url; ?>Orden-Mantenimiento">
+                            <a class="nav-link" href="<?php echo base_url; ?>Ordenes">
                                 <div class="sb-nav-link-icon"><i class="fa-solid fa-pen-to-square"></i></div>
                                 Orden Mantenimiento
                             </a>

@@ -264,3 +264,46 @@ function btnReingresarPreventivo(id_preventivo) {
     }
   });
 }
+
+function btnCargarOrden(id_preventivo) {
+  Swal.fire({
+    title: "¿Cargar la Orden de Manteniemiento?",
+    text: "El mantenimiento preventivo pasará a estado 'en curso' ",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Confirmar",
+    cancelButtonText: "Cancelar"
+  }).then((result) => {
+    if (result.isConfirmed) {
+      const url = base_url + "Preventivos/cargarOrden/" + id_preventivo;
+      const http = new XMLHttpRequest();
+      http.open("GET", url, true);
+      http.send();
+      http.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+          console.log(this.responseText);
+          const res = JSON.parse(this.responseText);
+          if (res == "ok") {
+            Swal.fire({
+              position: 'top-center',
+              icon: 'success',
+              title: 'Orden de Mantenimietno generada con éxito',
+              showConfirmButton: false,
+              timer: 3000
+            })
+            console.log("recargar");
+            tblPreventivos.ajax.reload();
+          } else {
+            Swal.fire(
+              'Error!',
+              res,
+              'error'
+            );
+          }
+        }
+      }
+    }
+  });
+}
