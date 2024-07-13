@@ -3,20 +3,22 @@
     <li class="breadcrumb-item active" aria-current="page">Empleados</li>
 </ol>
 <button class="btn btn-primary mb-2" type="button" onclick="frmPersona();"><i class="fa-solid fa-user-plus"></i></button>
-<table class="table table-light" id="tblPersonas">
-    <thead class="thead-dark">
-        <tr>
-            <th>Legajo</th>
-            <th>Nombre y Apellido</th>  
-            <th>Dni</th>
-            <th>Mail</th>  
-            <th>Estado</th>  
-            <th></th> 
-        </tr>
-    </thead>
-    <tbody>
-    </tbody>
-</table>
+<div class="table-responsive-xl table-fixed text-nowrap">
+    <table class="table table-light table-striped w-100" id="tblPersonas">
+        <thead class="thead-dark">
+            <tr>
+                <th>Legajo</th>
+                <th>Nombre y Apellido</th>  
+                <th>Dni</th>
+                <th>Mail</th>  
+                <th>Estado</th>  
+                <th></th> 
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
 <div id="nueva-persona" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="my-modal-title" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">

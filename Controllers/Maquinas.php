@@ -9,24 +9,48 @@ class Maquinas extends Controller{
     }
     public function index()
     {
-        $data['celdas'] = $this->model->getCeldas();
-        $data['tipo_maquina'] = $this->model->getTipo();
-        $this->views->getView($this, "index", $data);
+        $id_usuario = $_SESSION['id_usuario'];
+        $verificarAgregar = $this->model->verificarPermiso($id_usuario, 'agregar_maquina');
+        $verificar = $this->model->verificarPermiso($id_usuario, 'listar_maquinas' );
+        if (!empty($verificar)) {
+            $data['celdas'] = $this->model->getCeldas();
+            $data['tipo_maquina'] = $this->model->getTipo();
+            $data['verificarAgregar'] = !empty($verificarAgregar);
+            $this->views->getView($this, "index", $data);
+        } else {
+            header('Location: '.base_url.'Errors/permisos');
+        }
     }
     public function listar()
     {
+        $id_usuario = $_SESSION['id_usuario'];
+        $verificar = $this->model->verificarPermiso($id_usuario, 'modificar_maquina' );
+        '<div>
+        <button class= "btn btn-primary" type="button" onclick="btnEditarMaquina(e)"><i class="fa-solid fa-user-pen">asd</i></button>
+        <div/>';
         $data = $this->model->getMaquinas();
         for ($i=0; $i < count($data); $i++){
             if ($data[$i]['estado'] == 1) {
                 $data[$i]['estado'] = '<span class="badge badge-success">Activa</span>';
+                if (!empty($verificar)) {
+                $data[$i]['acciones'] ='<div>
+                <button class= "btn btn-primary" type="button" onclick="btnEditarMaquina('.$data[$i]['id_maquina'].')"><i class="fa-solid fa-user-pen"></i></button>
+                <button class= "btn btn-danger" type="button" onclick="btnEliminarMaquina('.$data[$i]['id_maquina'].')"><i class="fa-solid fa-user-slash"></i></button>
+                <div/>';
+                } else {
+                    $data[$i]['acciones'] = '<div></div>';
+                }
             }else{
                 $data[$i]['estado'] = '<span class="badge badge-danger">Inactiva</span>';
+                if (!empty($verificar)) {
+                $data[$i]['acciones'] ='<div>
+                <button class= "btn btn-primary" type="button" onclick="btnEditarMaquina('.$data[$i]['id_maquina'].')"><i class="fa-solid fa-user-pen"></i></button>
+                <button class= "btn btn-success" type="button" onclick="btnReingresarMaquina('.$data[$i]['id_maquina'].')"><i class="fa-solid fa-user-check"></i></button>
+                <div/>';
+                } else {
+                    $data[$i]['acciones'] = '<div></div>';
+                }
             }
-            $data[$i]['acciones'] = '<div>
-            <button class= "btn btn-primary" type="button" onclick="btnEditarMaquina('.$data[$i]['id_maquina'].')"><i class="fa-solid fa-user-pen"></i></button>
-            <button class= "btn btn-danger" type="button" onclick="btnEliminarMaquina('.$data[$i]['id_maquina'].')"><i class="fa-solid fa-user-slash"></i></button>
-            <button class= "btn btn-success" type="button" onclick="btnReingresarMaquina('.$data[$i]['id_maquina'].')"><i class="fa-solid fa-user-check"></i></button>
-            <div/>';
         }
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
         die();

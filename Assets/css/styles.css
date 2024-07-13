@@ -11,6 +11,16 @@
  * Copyright 2011-2022 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
  */
+
+#permisos-group ul {
+  list-style-type: none;
+  padding-left: 20px;
+}
+
+#permisos-group li {
+  margin-top: 5px;
+}
+
 :root {
   --bs-blue: #0d6efd;
   --bs-indigo: #6610f2;

@@ -1,5 +1,11 @@
 <?php
-class Preventivos extends Controller{
+require_once 'config/app/Controller.php';
+// Incluir todos los archivos en el directorio statesPreventivo
+foreach (glob(__DIR__ . '/statesPreventivo/*.php') as $filename) {
+    require_once $filename;
+}
+class Preventivos extends Controller {
+    private $estado;
     public function __construct() {
         session_start();
         if (empty($_SESSION['activo'])) {
@@ -7,60 +13,138 @@ class Preventivos extends Controller{
         }
         parent::__construct();
     }
-    public function index()
-    {
-      $data['maquinas'] = $this->model->getMaquinas();
-      $data['personas'] = $this->model->getPersonas();
-      $data['usuarios'] = $this->model->getUsuarios();
-      $this->views->getView($this, "index", $data);
+    public function index() {
+        $id_usuario = $_SESSION['id_usuario'];
+        $verificarAgregar = $this->model->verificarPermiso($id_usuario, 'agregar_preventivo');
+        $verificar = $this->model->verificarPermiso($id_usuario, 'listar_preventivos' );
+        if (!empty($verificar)) {
+            $data['verificarAgregar'] = !empty($verificarAgregar);
+            $data['maquinas'] = $this->model->getMaquinas();
+            $data['personas'] = $this->model->getPersonas();
+            $data['usuarios'] = $this->model->getUsuarios();
+            $data['frecuencia'] = $this->model->getFrecuencias();
+            $this->views->getView($this, "index", $data);
+        } else {
+            header('Location: '.base_url.'Errors/permisos');
+        }
+
     }
 
-    public function listarTareas(int $id_seleccion){
+    public function vencidos(){
+      $this->views->getView($this, "vencidos");
+    }    
+    public function avencer(){
+        $this->views->getView($this, "avencer");
+    }
+
+    public function inactivos(){
+        $this->views->getView($this, "inactivos");
+    }
+
+    public function listarTareas(int $id_seleccion) {
         $data = $this->model->getTareas($id_seleccion);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
         die();
     }
-
-    public function listar()
-    {
+    public function listar() {
+        $id_usuario = $_SESSION['id_usuario'];
+        $permisos = $this->model->verificarPermisos($id_usuario);
         $data = $this->model->getPreventivos();
-        /*
-        Botones Acciones
-        <a class="link-dark" href="#" onclick="btnCargarOrden('.$data[$i]['id_preventivo'].')"><i class="fa-solid fa-plus fs-5  me-3"></i></a>
-        <a class="link-dark" href="#" onclick="btnEliminarPreventivo('.$data[$i]['id_preventivo'].')"><i class="fa-solid fa-close fs-5"></i></a>
-        <a class="link-dark" href="#" onclick="btnReingresarPreventivo('.$data[$i]['id_preventivo'].')"><i class="fa-solid fa-check fs-5"></i></a>
-        <a class="link-dark" href="#" onclick="btnEditarPreventivo('.$data[$i]['id_preventivo'].')"><i class="fa-solid fa-pen-to-square fs-5 me-3"></i></a>
-        */
+
+        $verificar = [];
+        foreach ($permisos as $permiso) {
+            $verificar[$permiso['nombre']] = true;
+        }
         for ($i = 0; $i < count($data); $i++) {
-            if ($data[$i]['estado'] == 1) {
-                $data[$i]['estado'] = '<span class="badge badge-dark">Aprobado</span>';
-                $data[$i]['acciones'] = '<div class="btn-group" role="group">
-                <a class="link-dark" href="#" onclick="btnCargarOrden('.$data[$i]['id_preventivo'].')"><i class="fa-solid fa-plus fs-5  me-3"></i></a>
-                </div>';
-            } else if ($data[$i]['estado'] == 0){
-                $data[$i]['estado'] = '<span class="badge badge-dark">Pendiente</span>';
-                $data[$i]['acciones'] = '<div class="btn-group" role="group">
-                    <a class="link-dark" href="#" onclick="btnEditarPreventivo('.$data[$i]['id_preventivo'].')"><i class="fa-solid fa-pen-to-square fs-5 me-3"></i></a>
-                </div>';
-            } else if ($data[$i]['estado'] == 2){
-                $data[$i]['estado'] = '<span class="badge badge-dark">Rechazado</span>';
-                $data[$i]['acciones'] = '<div class="btn-group" role="group">
-                    <a class="link-dark" href="#" onclick="btnEditarPreventivo('.$data[$i]['id_preventivo'].')"><i class="fa-solid fa-pen-to-square fs-5 me-3"></i></a>
-                </div>';
-                
-            }else if ($data[$i]['estado'] == 4){
-                $data[$i]['estado'] = '<span class="badge badge-dark">En Curso</span>';
-                $data[$i]['acciones'] = '<div class="btn-group" role="group">
-                <a class="link-dark" href="'.base_url. "Preventivos/generarPDF/".$data[$i]['orden'].'" target="_blank" rel="noopener"><i class="fa-solid fa-file-pdf fs-5"></i></a>
-                </div>';
-            }
+            $this->setEstado($data[$i]['estado']);
+            $data[$i]['estado'] = $this->estado->mostrarEstado();
+            $data[$i]['acciones'] = $this->estado->definirAcciones($data[$i],$verificar);
         }
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
         die();
     }
+    public function listarVencidos() {
+        $id_usuario = $_SESSION['id_usuario'];
+        $permisos = $this->model->verificarPermisos($id_usuario);
+        $data = $this->model->getPreventivosVencidos();
 
-    public function registrar()
-    {
+        $verificar = [];
+        foreach ($permisos as $permiso) {
+            $verificar[$permiso['nombre']] = true;
+        }
+        for ($i = 0; $i < count($data); $i++) {
+            $this->setEstado($data[$i]['estado']);
+            $data[$i]['estado'] = $this->estado->mostrarEstado();
+            $data[$i]['acciones'] = $this->estado->definirAcciones($data[$i],$verificar);
+        }
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+        die();
+    }
+    public function listarInactivos() {
+        $id_usuario = $_SESSION['id_usuario'];
+        $permisos = $this->model->verificarPermisos($id_usuario);
+        $data = $this->model->getPreventivosInactivos();
+
+        $verificar = [];
+        foreach ($permisos as $permiso) {
+            $verificar[$permiso['nombre']] = true;
+        }
+        for ($i = 0; $i < count($data); $i++) {
+            $this->setEstado($data[$i]['estado']);
+            $data[$i]['estado'] = $this->estado->mostrarEstado();
+            $data[$i]['acciones'] = $this->estado->definirAcciones($data[$i],$verificar);
+        }
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+        die();
+    }
+    public function listarAVencer() {
+        $id_usuario = $_SESSION['id_usuario'];
+        $permisos = $this->model->verificarPermisos($id_usuario);
+        $data = $this->model->getPreventivosAVencer();
+
+        $verificar = [];
+        foreach ($permisos as $permiso) {
+            $verificar[$permiso['nombre']] = true;
+        }
+        for ($i = 0; $i < count($data); $i++) {
+            $this->setEstado($data[$i]['estado']);
+            $data[$i]['estado'] = $this->estado->mostrarEstado();
+            $data[$i]['acciones'] = $this->estado->definirAcciones($data[$i],$verificar);
+        }
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+        die();
+    }
+    private function setEstado($estadoId) {
+        switch($estadoId) {
+            case 0:
+                $this->estado = new Pendiente();
+                break;
+            case 1:
+                $this->estado = new Aprobado();
+                break;
+            case 2:
+                $this->estado = new Rechazado();
+                break;
+            case 3:
+                $this->estado = new Activo();
+                break;
+            case 4:
+                $this->estado = new EnCurso();
+                break;
+            case 5:
+                $this->estado = new Vencido();
+                break;
+            case 6:
+                $this->estado = new Programado();
+                break;
+            case 7:
+                $this->estado = new Cancelado();
+                break;
+            default:
+                throw new Exception("Estado desconocido: $estadoId");
+        }
+    }
+    public function registrar(){
         $id_maquina = $_POST["id_maquina"];
         $tareas = isset($_POST["id_tarea"]) ? $_POST["id_tarea"] : array();
         $legajo = $_POST["legajo"];
@@ -69,18 +153,24 @@ class Preventivos extends Controller{
         $id_usuario = $_SESSION['id_usuario'];
         $id_preventivo = $_POST["id_preventivo"];
         $descripcion = $_POST["descripcion"];
+        $frecuencia = $_POST["frecuencia"];
         $count = 0;
         $resultado = 0;
         $accionPreventivo = '';
+        $fecha_programada_completa = $fecha_programada . ' ' . $hora_programada;
+        $fechaIngresada = new DateTime($fecha_programada_completa);
+        $fechaActual = new DateTime();
         foreach ($tareas as $id_tarea) {               
             $resultado = $this->model->getTiempoTarea($id_tarea);                            
             $count = $count + $resultado['tiempo_tarea'];
         }
-        if(empty($id_maquina) || empty($tareas) || empty($legajo) || empty($fecha_programada) || empty($hora_programada) || empty($descripcion)){
-            $msg = "Todos los campos son obligatorios";
+        if(empty($id_maquina) || empty($tareas) || empty($legajo) || empty($frecuencia) || empty($fecha_programada) || empty($hora_programada) || empty($descripcion)){
+            $msg = array('msg' => 'Todos los campos son obligatorios', 'icono' => 'warning');
+            }else if($fechaIngresada <= $fechaActual) {
+                $msg = array('msg' => 'La fecha y hora programada deben ser posteriores al momento actual.', 'icono' => 'warning');    
         }else{
             if ($id_preventivo == "") {
-                $data = $this->model->registrarPreventivo($id_maquina, $legajo, $fecha_programada, $hora_programada, $id_usuario, $descripcion, $count);
+                $data = $this->model->registrarPreventivo($id_maquina, $legajo, $fecha_programada, $hora_programada, $id_usuario, $descripcion, $frecuencia, $count);
                 if($data == "OK"){
                     $id_preventivo = $this->model->getLastInsertedPreventivoId();
                     $accionPreventivo = 'Alta';
@@ -91,15 +181,15 @@ class Preventivos extends Controller{
                             $validacionTarea = $this->model->registrarPreventivoTareas($id_tarea, $id_preventivo);                            
                         }
                     }
-                    $msg = "si";
+                    $msg = array('msg' => 'Preventivo creado', 'icono' => 'success');
                 } else if ($data == "existe") {
-                    $msg = "El preventivo ya existe";
+                    $msg = array('msg' => 'El preventivo ya existe', 'icono' => 'warning');
                 } else { 
-                    $msg = "Error al registrar el preventivo";
+                    $msg = array('msg' => 'Error al registrar el preventivo', 'icono' => 'warning');
                 }
         }else{
 
-            $data = $this->model->modificarPreventivo($id_preventivo, $legajo, $fecha_programada, $hora_programada, $descripcion, $count);
+            $data = $this->model->modificarPreventivo($id_preventivo, $legajo, $fecha_programada, $hora_programada, $descripcion, $frecuencia, $count);
             if($data == "modificado"){
                 $accionPreventivo = 'Edicion';
                 $temp = $this->model->accionAuditoriaPreventivo($id_preventivo, $id_usuario, $accionPreventivo);
@@ -107,7 +197,7 @@ class Preventivos extends Controller{
                 foreach ($tareas as $id_tarea) {
                     $validacionTarea = $this->model->registrarPreventivoTareas($id_tarea, $id_preventivo);                            
                 }
-                $msg = "modificado";
+                $msg = array('msg' => 'Preventivo modificado', 'icono' => 'success');
             } else if ($data == "existe") {
                 $msg = "El preventivo ya existe";
             } else { 
@@ -125,28 +215,33 @@ class Preventivos extends Controller{
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
         die();
     } 
-    public function eliminar(int $id_preventivo){
-        $data = $this->model->accionPreventivo(0, $id_preventivo);
+    public function rechazar(int $id_preventivo){
+        $id_usuario = $_SESSION['id_usuario'];
+        $data = $this->model->accionPreventivo(2, $id_preventivo);
         if ($data == 1) {
-            $msg = "ok";
+            $accionPreventivo = 'Rechazar';
+            $msg = array('msg' => 'Preventivo Rechazado con éxito', 'icono' => 'success');
+            $data1 = $this->model->accionAuditoriaPreventivo($id_preventivo, $id_usuario, $accionPreventivo);
         } else {
-            $msg = "Error al eliminar el preventivo";
+            $msg = array('msg' => 'Error al rechazar el Preventivo', 'icono' => 'warning');
         }
         echo json_encode($msg, JSON_UNESCAPED_UNICODE);
         die();
     }
-    
-    public function reingresar(int $id_preventivo){
+    public function aprobar(int $id_preventivo){
         $data = $this->model->accionPreventivo(1, $id_preventivo);
+        $id_usuario = $_SESSION['id_usuario'];
         if ($data == 1) {
-            $msg = "ok";
-        } else {
-            $msg = "Error al reingresar al preventivo";
-        }
+               $accionPreventivo = 'Aprobar';
+               $msg = array('msg' => 'Preventivo aprobado con éxito', 'icono' => 'success');
+               $data1 = $this->model->accionAuditoriaPreventivo($id_preventivo, $id_usuario, $accionPreventivo);
+               $data2 = $this->model->agregaAprobacionPreventivo($id_preventivo, $id_usuario);
+           } else {
+               $msg = array('msg' => 'Error al aprobar el Preventivo', 'icono' => 'warning');
+           }
         echo json_encode($msg, JSON_UNESCAPED_UNICODE);
         die();
     }
-
     public function cargarOrden(int $id_preventivo){
         $data = $this->model->getPreventivo($id_preventivo);
         $legajo = $data['legajo'];
@@ -179,10 +274,20 @@ class Preventivos extends Controller{
         }
         echo json_encode($res, JSON_UNESCAPED_UNICODE);
         die();
+    }    
+    public function cancelar(int $id_preventivo){
+        $id_usuario = $_SESSION['id_usuario'];
+        $data = $this->model->accionPreventivo(7, $id_preventivo);
+        if ($data == 1) {
+            $accionPreventivo = 'Cancelar';
+            $msg = array('msg' => 'Preventivo Cancelado con éxito', 'icono' => 'success');
+            $data1 = $this->model->accionAuditoriaPreventivo($id_preventivo, $id_usuario, $accionPreventivo);
+        } else {
+            $msg = array('msg' => 'Error al cancelar el Preventivo', 'icono' => 'warning');
+        }
+        echo json_encode($msg, JSON_UNESCAPED_UNICODE);
+        die();
     }
-
-  
-
     public function generarPDF(int $orden) {
         // Obtener datos del preventivo y tareas asociadas
         $data = $this->model->getOrden($orden);
@@ -289,11 +394,10 @@ class Preventivos extends Controller{
     
         // Salida del PDF
         $pdf->Output();
-    }
+    }        
     
-        
 }
-    ?>
+?>
     
 
     

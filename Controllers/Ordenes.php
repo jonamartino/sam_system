@@ -1,86 +1,95 @@
 <?php
+require_once 'config/app/Controller.php';
+
+// Incluir las clases de estado
+require_once 'StatesOrdenes/Aprobado.php';
+require_once 'StatesOrdenes/Pendiente.php';
+require_once 'StatesOrdenes/Ingresado.php';
+require_once 'StatesOrdenes/Rechazado.php';
+require_once 'StatesOrdenes/Vencido.php';
+require_once 'StatesOrdenes/Completado.php';
 class Ordenes extends Controller{
-    public function __construct() {
-        session_start();
-        if (empty($_SESSION['activo'])) {
-            header("location: ".base_url);
-        }
-        parent::__construct();
+  private $estado;
+
+  public function __construct() 
+  {
+    session_start();
+    if (empty($_SESSION['activo'])) {
+        header("location: ".base_url);
     }
-    public function index()
-    {
+    parent::__construct();
+  }
+  public function index(){
+    $id_usuario = $_SESSION['id_usuario'];
+    $verificar = $this->model->verificarPermiso($id_usuario, 'listar_ordenes' );
+    if (!empty($verificar)) {
       $data = $this->model->getOrdenes();
       $data['maquinas'] = $this->model->getMaquinas();
       $data['personas'] = $this->model->getPersonas();
       $data['preventivos'] = $this->model->getPreventivos();
       $this->views->getView($this, "index", $data);
+    } else {
+      header('Location: '.base_url.'Errors/permisos');
     }
+  }
 
-    public function listarTareas(int $id_seleccion){
-      $data = $this->model->getTareas($id_seleccion);
-      echo json_encode($data, JSON_UNESCAPED_UNICODE);
-      die();
-    }
- 
-    public function listar()
-    {
-        $data = $this->model->getOrdenes();
-        /*
-        Botones Acciones
-        <a class="link-dark" href="#" onclick="btnCargarOrden('.$data[$i]['id_preventivo'].')"><i class="fa-solid fa-plus fs-5  me-3"></i></a>
-        <a class="link-dark" href="#" onclick="btnEliminarPreventivo('.$data[$i]['id_preventivo'].')"><i class="fa-solid fa-close fs-5"></i></a>
-        <a class="link-dark" href="#" onclick="btnReingresarPreventivo('.$data[$i]['id_preventivo'].')"><i class="fa-solid fa-check fs-5"></i></a>
-        <a class="link-dark" href="#" onclick="btnEditarPreventivo('.$data[$i]['id_preventivo'].')"><i class="fa-solid fa-pen-to-square fs-5 me-3"></i></a>
-        */
-        for ($i = 0; $i < count($data); $i++) {
-            if ($data[$i]['estado'] == 1) {
-                $data[$i]['estado'] = '<span class="badge badge-dark">En Aprobación</span>';
-                $data[$i]['acciones'] = '<div class="btn-group" role="group">
-                <a class="link-dark" href="#" onclick="btnAprobarOrden('.$data[$i]['id_orden'].')"><i class="fa-solid fa-check fs-5 me-3"></i></a>
-                <a class="link-dark" href="#" onclick="btnRechazarOrden('.$data[$i]['id_orden'].')"><i class="fa-solid fa-close fs-5"></i></a>
-                </div>';
-            } else if ($data[$i]['estado'] == 0){
-                $data[$i]['estado'] = '<span class="badge badge-dark">En Curso</span>';
-                $data[$i]['acciones'] = '<div class="btn-group" role="group">
-                    <a class="link-dark" href="#" onclick="btnIngresarOrden('.$data[$i]['id_orden'].')"><i class="fa-solid fa-plus fs-5 me-3"></i></a>
-                </div>';
-            } else if ($data[$i]['estado'] == 2){
-              $data[$i]['estado'] = '<span class="badge badge-dark">Aprobado</span>';
-              $data[$i]['acciones'] = '<div class="btn-group" role="group">
-                  <a class="link-dark" href="#" onclick="btnCompletarOrden('.$data[$i]['id_orden'].')"><i class="fa-solid fa-check fs-5 me-3"></i></a>
-              </div>';
-            } else if ($data[$i]['estado'] == 3){
-              $data[$i]['estado'] = '<span class="badge badge-dark">Rechazado</span>';
-              $data[$i]['acciones'] = '<div class="btn-group" role="group">
-                  <a class="link-dark" href="#" onclick="btnIngresarOrden('.$data[$i]['id_orden'].')"><i class="fa-solid fa-plus fs-5 me-3"></i></a>
-                  <a class="link-dark" href="#" onclick="btnCancelarOrden('.$data[$i]['id_orden'].')"><i class="fa-solid fa-close fs-5"></i></a>
-              </div>';
-            } else if ($data[$i]['estado'] == 4){
-              $data[$i]['estado'] = '<span class="badge badge-dark">Vencido</span>';
-              $data[$i]['acciones'] = '<div class="btn-group" role="group">
-                  <a class="link-dark" href="#" onclick="btnCancelarOrden('.$data[$i]['id_orden'].')"><i class="fa-solid fa-close fs-5"></i></a>
-              </div>';
-            } else if ($data[$i]['estado'] == 5){
-              $data[$i]['estado'] = '<span class="badge badge-dark">Completado</span>';
-              $data[$i]['acciones'] = '<div class="btn-group" role="group">
-              <a class="link-dark" href="'.base_url. "Preventivos/generarPDF/".$data[$i]['id_orden'].'" target="_blank" rel="noopener"><i class="fa-solid fa-file-pdf fs-5"></i></a>
-              </div>'; 
-            } else if ($data[$i]['estado'] == 6){
-              $data[$i]['estado'] = '<span class="badge badge-dark">Cancelado</span>';
-              $data[$i]['acciones'] = '<div class="btn-group" role="group">
-                  
-              </div>';
-            }
-        }
-        echo json_encode($data, JSON_UNESCAPED_UNICODE);
-        die();
-    }
+  public function listarTareas(int $id_seleccion){
+    $data = $this->model->getTareas($id_seleccion);
+    echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    die();
+  }
 
-    public function editar(int $id_orden){
-      $data = $this->model->editarOrden($id_orden);
-      $data['ordenes_tareas'] = $this->model->getOrdenesTareas($id_orden);
-      echo json_encode($data, JSON_UNESCAPED_UNICODE);
-      die();
+  public function listar(){
+    $id_usuario = $_SESSION['id_usuario'];
+    $permisos = $this->model->verificarPermisos($id_usuario);
+    $data = $this->model->getOrdenesListar();
+
+    $verificar = [];
+    foreach ($permisos as $permiso) {
+        $verificar[$permiso['nombre']] = true;
+    }
+    for ($i = 0; $i < count($data); $i++) {
+      $this->setEstado($data[$i]['estado']);
+      $data[$i]['estado'] = $this->estado->mostrarEstado();
+      $data[$i]['acciones'] = $this->estado->definirAcciones($data[$i],$verificar);
+    }
+    echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    die();
+  }
+
+  private function setEstado($estadoId) {
+    switch($estadoId) {
+        case 0:
+            $this->estado = new Pendiente();
+            break;
+        case 1:
+            $this->estado = new Ingresado();
+            break;
+        case 2:
+            $this->estado = new Aprobado();
+            break;
+        case 3:
+            $this->estado = new Rechazado();
+            break;
+        case 4:
+            $this->estado = new Vencido();
+            break;
+        case 5:
+            $this->estado = new Completado();
+            break;
+        case 6:
+            $this->estado = new Cancelado();
+            break;            
+        default:
+            throw new Exception("Estado desconocido: $estadoId");
+    }
+}
+
+  public function editar(int $id_orden){
+    $data = $this->model->editarOrden($id_orden);
+    $data['ordenes_tareas'] = $this->model->getOrdenesTareas($id_orden);
+    echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    die();
   } 
 
   public function registrar(){
@@ -93,7 +102,7 @@ class Ordenes extends Controller{
     $id_usuario = $_SESSION['id_usuario'];
     $accionOrden = '';
     if(empty($fecha) || empty($tareas) || empty($hora) || empty($observaciones) || empty($tiempo_total)){
-      $msg = "Todos los campos son obligatorios";
+      $msg = array('msg' => 'Todos los campos son obligatorios', 'icono' => 'warning');
     }else{
         $data = $this->model->modificarOrden($id_orden, $fecha, $hora, $observaciones, $tiempo_total);
         if($data == "modificado"){
@@ -102,11 +111,11 @@ class Ordenes extends Controller{
           foreach ($tareas as $id_tarea) {
               $validacionTarea = $this->model->registrarTareasRealizadas($id_tarea, $id_orden);                            
             }
-          $msg = "modificado";
+            $msg = array('msg' => 'Orden modificada con éxito', 'icono' => 'success');
         } else if ($data == "existe") {
-          $msg = "El preventivo ya existe";
+          $msg = array('msg' => 'La orden de mantenimiento ya existe', 'icono' => 'warning');
         } else { 
-          $msg = "Error al registrar el preventivo";
+          $msg = array('msg' => 'Error al generar Orden', 'icono' => 'warning');
         }
     }
     echo json_encode($msg, JSON_UNESCAPED_UNICODE);
@@ -118,10 +127,11 @@ class Ordenes extends Controller{
     $data = $this->model->accionOrden(2, $id_orden);
     if ($data == 1) {
         $accionOrden = 'Aprobar';
-        $msg = "ok";
+        $msg = array('msg' => 'Orden aprobada con éxito', 'icono' => 'success');
         $data1 = $this->model->accionAuditoriaOrden($id_orden, $id_usuario, $accionOrden);
+        $data2 = $this->model->agregaAprobacionOrden($id_orden, $id_usuario);
     } else {
-        $msg = "Error al aprobar orden";
+        $msg = array('msg' => 'Error al aprobar Orden', 'icono' => 'warning');
     }
     echo json_encode($msg, JSON_UNESCAPED_UNICODE);
     die();
@@ -132,10 +142,10 @@ class Ordenes extends Controller{
     $data = $this->model->accionOrden(3, $id_orden);
     if ($data == 1) {
         $accionOrden = 'Rechazar';
-        $msg = "ok";
+        $msg = array('msg' => 'Orden Rechazada con éxito', 'icono' => 'success');
         $data1 = $this->model->accionAuditoriaOrden($id_orden, $id_usuario, $accionOrden);
     } else {
-        $msg = "Error al rechazar orden";
+        $msg = array('msg' => 'Error al rechazar Orden', 'icono' => 'warning');
     }
     echo json_encode($msg, JSON_UNESCAPED_UNICODE);
     die();
@@ -144,12 +154,17 @@ class Ordenes extends Controller{
   public function completar(int $id_orden){
     $id_usuario = $_SESSION['id_usuario'];
     $data = $this->model->accionOrden(5, $id_orden);
+    $id_preventivo = $this->model->getPreventivo($id_orden);
+    $dias = $this->model->getCantidadDias($id_preventivo);
     if ($data == 1) {
         $accionOrden = 'Completar';
-        $msg = "ok";
+        $msg = array('msg' => 'Orden completada con éxito', 'icono' => 'success');
         $data1 = $this->model->accionAuditoriaOrden($id_orden, $id_usuario, $accionOrden);
+        $var1 = $this->model->completarPreventivo(6, $dias, $id_preventivo);
+        $var2 = $this->model->accionAuditoriaPreventivo($id_preventivo, $id_usuario, $accionOrden);
+
     } else {
-        $msg = "Error al completar orden";
+        $msg = array('msg' => 'Error al completar Orden', 'icono' => 'warning');
     }
     echo json_encode($msg, JSON_UNESCAPED_UNICODE);
     die();
@@ -158,12 +173,15 @@ class Ordenes extends Controller{
   public function cancelar(int $id_orden){
     $id_usuario = $_SESSION['id_usuario'];
     $data = $this->model->accionOrden(6, $id_orden);
+    $id_preventivo = $this->model->getPreventivo($id_orden);
     if ($data == 1) {
         $accionOrden = 'Cancelar';
-        $msg = "ok";
+        $msg = array('msg' => 'Orden cancelada con éxito', 'icono' => 'success');
         $data1 = $this->model->accionAuditoriaOrden($id_orden, $id_usuario, $accionOrden);
+        $data2 = $this->model->accionPreventivo(7, $id_preventivo);
+        $data3 = $this->model->accionAuditoriaPreventivo($id_preventivo, $id_usuario, $accionOrden);
     } else {
-        $msg = "Error al cancelar orden";
+      $msg = array('msg' => 'Error al cancelar Orden', 'icono' => 'warning');
     }
     echo json_encode($msg, JSON_UNESCAPED_UNICODE);
     die();

@@ -1,4 +1,3 @@
-
 // Tablas Usuarios, Maquinas
 let tblUsuarios, tblMaquinas, tblPersonas;
 document.addEventListener("DOMContentLoaded", function () {
@@ -93,37 +92,7 @@ document.addEventListener("DOMContentLoaded", function () {
 })
 
 // Usuarios
-function frmLogin(e) {
-    e.preventDefault();
-    const usuario = document.getElementById("usuario");
-    const clave = document.getElementById("clave");
-    if (usuario.value == "") {
-        clave.classList.remove("is-invalid");
-        usuario.classList.add("is-invalid");
-        usuario.focus();
-    } else if (clave.value == "") {
-        usuario.classList.remove("is-invalid");
-        clave.classList.add("is-invalid");
-        clave.focus();
-    } else {
-        const url = base_url + "Usuarios/validar";
-        const frm = document.getElementById("frmLogin");
-        const http = new XMLHttpRequest();
-        http.open("POST", url, true);
-        http.send(new FormData(frm));
-        http.onreadystatechange = function () {
-            if (this.readyState == 4 && this.status == 200) {
-                const res = JSON.parse(this.responseText);
-                if (res == "ok") {
-                    window.location = base_url + "Usuarios";
-                } else {
-                    document.getElementById("alerta").classList.remove("d-none");
-                    document.getElementById("alerta").innerHTML = res;
-                }
-            }
-        }
-    }
-}
+
 function frmUsuario() {
     document.getElementById("title").innerHTML = "Nuevo Usuario";
     document.getElementById("btn-accion").innerHTML = "Registrar";
@@ -135,60 +104,22 @@ function frmUsuario() {
 function registrarUser(e) {
     e.preventDefault();
     const usuario = document.getElementById("usuario");
-    const clave = document.getElementById("clave");
     const legajo = document.getElementById("legajo");
-    const confirmar = document.getElementById("confirmar");
-
 
     if (usuario.value == "" || legajo.value == "") {
-        Swal.fire({
-            position: 'top-center',
-            icon: 'error',
-            title: 'Todos los campos son obligatorios',
-            showConfirmButton: false,
-            timer: 3000
-        })
+        alertas('Todos los campos son obligatorios', 'warning');
     } else {
         const url = base_url + "Usuarios/registrar";
         const frm = document.getElementById("frmUsuario");
         const http = new XMLHttpRequest();
-        console.log(frm);
         http.open("POST", url, true);
         http.send(new FormData(frm));
         http.onreadystatechange = function () {
             if (this.readyState == 4 && this.status == 200) {
                 const res = JSON.parse(this.responseText);
-                if (res == "si") {
-                    Swal.fire({
-                        position: 'top-center',
-                        icon: 'success',
-                        title: 'Usuario registrado con éxito',
-                        showConfirmButton: false,
-                        timer: 3000
-                    })
-                    frm.reset();
-                    $("#nuevo-usuario").modal("hide");
-                    tblUsuarios.ajax.reload();
-                } else if (res == "modificado") {
-                    Swal.fire({
-                        position: 'top-center',
-                        icon: 'success',
-                        title: 'Usuario modificado con éxito',
-                        showConfirmButton: false,
-                        timer: 3000
-                    })
-                    frm.reset();
-                    $("#nuevo-usuario").modal("hide");
-                    tblUsuarios.ajax.reload();
-                } else {
-                    Swal.fire({
-                        position: 'top-center',
-                        icon: 'error',
-                        title: res,
-                        showConfirmButton: false,
-                        timer: 3000
-                    })
-                }
+                $("#nuevo-usuario").modal("hide");
+                alertas(res.msg, res.icono);
+                tblUsuarios.ajax.reload();
             }
         }
     }
@@ -232,20 +163,8 @@ function btnEliminarUser(id) {
             http.onreadystatechange = function () {
                 if (this.readyState == 4 && this.status == 200) {
                     const res = JSON.parse(this.responseText);
-                    if (res == "ok") {
-                        Swal.fire(
-                            'Exito',
-                            'El usuario ha sido eliminado',
-                            'success'
-                        )
-                        tblUsuarios.ajax.reload();
-                    } else {
-                        Swal.fire(
-                            'Error!',
-                            res,
-                            'error'
-                        );
-                    }
+                    tblUsuarios.ajax.reload();
+                    alertas(res.msg, res.icono);
                 }
             }
         }
@@ -270,20 +189,8 @@ function btnReingresarUser(id) {
             http.onreadystatechange = function () {
                 if (this.readyState == 4 && this.status == 200) {
                     const res = JSON.parse(this.responseText);
-                    if (res == "ok") {
-                        Swal.fire(
-                            'Exito',
-                            'El usuario ha sido reingresado',
-                            'success'
-                        )
-                        tblUsuarios.ajax.reload();
-                    } else {
-                        Swal.fire(
-                            'Error!',
-                            res,
-                            'error'
-                        );
-                    }
+                    tblUsuarios.ajax.reload();
+                    alertas(res.msg, res.icono);
                 }
             }
         }
@@ -642,4 +549,28 @@ function btnReingresarPersona(legajo) {
         }
     });
 }
-// Fin Personas
+
+function alertas(mensaje, icono) {
+    Swal.fire({
+        position: 'top-center',
+        icon: icono,
+        title: mensaje,
+        showConfirmButton: false,
+        timer: 3000
+    })
+}
+
+function modificarSistema(){
+    const frm = document.getElementById('frmSistema');
+    const url = base_url + "Administracion/modificar";
+    const http = new XMLHttpRequest();
+    http.open("POST", url, true);
+    http.send(new FormData(frm));
+    http.onreadystatechange = function () {
+      if (this.readyState == 4 && this.status == 200) {
+        const res = JSON.parse(this.responseText);
+        alertas(res.msg, res.icono);
+      }
+    }
+}
+

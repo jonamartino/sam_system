@@ -10,17 +10,30 @@
         <link href="<?php echo base_url;?>Assets/css/styles.css" rel="stylesheet" />
         <script src="<?php echo base_url;?>Assets/js/all.min.js" crossorigin="anonymous"></script>
     </head>
-    <body class="bg-primary">
+    <style>
+            body {
+                background-image: url('<?php echo base_url; ?>Assets/img/background.jpg');
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+                background-attachment: fixed;
+            }
+        </style>
+    <body">
         <div id="layoutAuthentication">
             <div id="layoutAuthentication_content">
                 <main>
                     <div class="container">
                         <div class="row justify-content-center">
-                            <div class="col-lg-5">
-                                <div class="card shadow-lg border-0 rounded-lg mt-5">
-                                    <div class="card-header"><h3 class="text-center font-weight-light my-4">Iniciar Sesión</h3></div>
+                            <div class="col-lg-4">
+                                <div class="card shadow-lg border-50 rounded-lg mt-5">
+                                    <div class="card-header">
+                                        <h3 class="text-center font-weight-light my-4">
+                                            <img src="<?php echo base_url;?>Assets/img/SAM6.png" alt="Logo de SAM" height="100">
+                                        </h3>
+                                </div>
                                     <div class="card-body">
-                                        <form id="frmLogin">
+                                        <form method="POST" id="frmLogin">
                                             <div class="form-floating mb-3">
                                                 <input class="form-control" id="usuario" name="usuario" type="text" placeholder="Ingrese Usuario" />
                                                 <label for="usuario" >Usuario</label>
@@ -33,12 +46,9 @@
                                                 
                                             </div>
                                             <div class="d-flex align-items-center justify-content-between mt-4 mb-0">
-                                                <button class="btn btn-primary" type="submit" onclick="frmLogin(event);">Siguiente</button>
+                                                <button class="btn btn-primary" type="submit" onclick="frmLogin(event);">Ingresar</button>
                                             </div>
                                         </form>
-                                    </div>
-                                    <div class="card-footer text-center py-3">
-                                        <div class="small"><a href="register.html">Crear Cuenta</a></div>
                                     </div>
                                 </div>
                             </div>
@@ -50,9 +60,9 @@
                 <footer class="py-4 bg-light mt-auto">
                     <div class="container-fluid px-4">
                         <div class="d-flex align-items-center justify-content-between small">
-                            <div class="text-muted">Copyright &copy; SAM 2023</div>
+                            <div class="text-muted">Copyright &copy; Jonathan Martino</div>
                             <div>
-                                <a href="#">Privacy Policy</a>
+                                <a href="#">Github</a>
                                 &middot;
                             </div>
                         </div>
@@ -61,10 +71,10 @@
             </div>
         </div>
         <script src="<?php echo base_url;?>Assets/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-        <script src="<?php echo base_url;?>Assets/js/scripts.js"></script>
         <script>
             const base_url = "<?php echo base_url; ?>";
         </script>
-        <script src="<?php echo base_url;?>Assets/js/funciones.js"></script>
+        <script src="<?php echo base_url;?>Assets/js/login.js"></script>
+
     </body>
 </html>

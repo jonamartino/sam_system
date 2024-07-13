@@ -1,8 +1,7 @@
 <?php
 class UsuariosModel extends Query{
     private $usuario, $nombre, $id_persona, $clave, $id, $estado;
-    public function __construct()
-    {
+    public function __construct(){
         parent::__construct();
     }
     public function getUsuario(string $usuario, string $clave){
@@ -11,21 +10,21 @@ class UsuariosModel extends Query{
         return $data;
         
     }
- 
     public function getUsuarios(){
-        $sql = "SELECT u.*, p.legajo, p.nombre, p.apellido FROM usuarios u INNER JOIN personas p where u.id_persona = p.legajo";
+        $sql = "SELECT u.*, p.legajo, p.nombre, p.apellido 
+        FROM usuarios u 
+        INNER JOIN personas p ON u.id_persona = p.legajo 
+        WHERE u.id != 0;";
         $data = $this->selectAll($sql);
         return $data;
         
     }
-
     public function getPersona(){
         $sql =  "SELECT * FROM personas  ";
         $data = $this->selectAll($sql);
         return $data;
         
     }
-
     public function registrarUsuario(string $usuario, string $clave, int $id_persona){
         $this->usuario = $usuario;
         $this->clave = $clave;
@@ -46,7 +45,6 @@ class UsuariosModel extends Query{
         }
         return $res;
     }
-
     public function modificarUsuario(string $usuario, int $id_persona, int $id){
         $this->usuario = $usuario;
         $this->id_persona = $id_persona;
@@ -61,13 +59,11 @@ class UsuariosModel extends Query{
         }
         return $res;
     }
-
     public function editarUser(int $id){
         $sql = "SELECT * FROM usuarios WHERE id = $id";
         $data = $this->select($sql);
         return $data;
     }
-
     public function accionUser(int $estado, int $id){
         $this->id = $id;
         $this->estado = $estado;
@@ -76,6 +72,13 @@ class UsuariosModel extends Query{
         $data = $this->save($sql,$datos);
         return $data;
     }
+    public function verificarPermiso(int $id_usuario, string $nombre){
+        $sql = "SELECT p.id, p.nombre, ur.id_usuario FROM usuario_roles ur INNER JOIN roles r ON ur.id_rol = r.id INNER JOIN
+        roles_permisos rp ON r.id = rp.id_roles INNER JOIN permisos p ON rp.id_permisos = p.id WHERE ur.id_usuario =$id_usuario AND p.nombre = '$nombre'";
+        $data = $this->selectAll($sql);
+        return $data;
+    }
+      
 }
 
 ?>

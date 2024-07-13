@@ -3,21 +3,23 @@
     <li class="breadcrumb-item active" aria-current="page">Usuarios</li>
 </ol>
 <button class="btn btn-primary mb-2" type="button" onclick="frmUsuario();"><i class="fa-solid fa-user-plus"></i></button>
-<table class="table table-light" id="tblUsuarios">
-    <thead class="thead-dark">
-        <tr>
-            <th>#</th>
-            <th>Usuario</th>
-            <th>legajo</th>
-            <th>Nombre</th>
-            <th>Apellido</th>
-            <th>Estado</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-    </tbody>
-</table>
+<div class="table-responsive-xl">
+    <table class="table table-light w-100" id="tblUsuarios">
+        <thead class="thead-dark">
+            <tr>
+                <th>#</th>
+                <th>Usuario</th>
+                <th>legajo</th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Estado</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
 <div id="nuevo-usuario" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="my-modal-title" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">

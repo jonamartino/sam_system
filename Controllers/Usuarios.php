@@ -7,13 +7,11 @@ class Usuarios extends Controller{
         }
         parent::__construct();
     }
-    public function index()
-    {
+    public function index(){
         $data['personas'] = $this->model->getPersona();
         $this->views->getView($this, "index", $data);
     }
-    public function listar()
-    {
+    public function listar(){
         $data = $this->model->getUsuarios();
         for ($i=0; $i < count($data); $i++){
             if ($data[$i]['estado'] == 1) {
@@ -31,31 +29,7 @@ class Usuarios extends Controller{
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
         die();
     }
-    public function validar()
-    {
-        if(empty($_POST['usuario']) || empty($_POST['clave'])){
-          $msg = "Los campos estan vacios";  
-        }else{
-            $usuario = $_POST['usuario'];
-            $clave = $_POST['clave'];
-            $hash = hash("SHA256", $clave);
-            $data = $this->model->getUsuario($usuario, $hash);
-            if($data){
-                $_SESSION['id_usuario'] = $data['id'];
-                $_SESSION['usuario'] = $data['usuario'];
-                $_SESSION['activo'] = true;
-                $msg = "ok";
-
-            }else{
-                $msg = "Usuario o contraseña incorrecta";
-            }
-        }
-        echo json_encode($msg, JSON_UNESCAPED_UNICODE);
-        die();
-        
-    }
-    public function registrar()
-    {
+    public function registrar(){
         $usuario = $_POST['usuario'];
         $legajo = $_POST['legajo'];
         $clave = $_POST['clave'];
@@ -63,62 +37,64 @@ class Usuarios extends Controller{
         $id = $_POST['id'];
         $hash = hash("SHA256", $clave);
         if(empty($usuario) || empty($legajo)){
-            $msg = "Todos los campos son obligatorios";
+            $msg = array('msg' => 'Todos los campos son obligatorios', 'icono' => 'warning');
         }else{
             if ($id == "") {
                 if($clave != $confirmar){
-                    $msg = "Las contraseñas deben coincidir.";
+                    $msg = array('msg' => 'Las contraseñas deben coincidir.', 'icono' => 'warning');
                 }else{
                     $data = $this->model->registrarUsuario($usuario, $hash, $legajo);
                     if($data == "OK"){
-                        $msg = "si";
+                        $msg = array('msg' => 'Usuario registrado con éxito', 'icono' => 'success');
                     } else if ($data == "existe") {
-                        $msg = "El usuario ya existe";
+                        $msg = array('msg' => 'El usuario ya existe', 'icono' => 'warning');
                     } else { 
-                        $msg = "Error al registrar el usuario";
+                        $msg = array('msg' => 'Error al registrar el usuario', 'icono' => 'warning');
+                        
                     }
                 }
         }else{
             $data = $this->model->modificarUsuario($usuario, $legajo, $id);
             if($data == "modificado"){
-                $msg = "modificado";
+                $msg = array('msg' => 'El usuario ha sido modificado', 'icono' => 'success');
             } else { 
-                $msg = "Error al modificar el usuario";
+                $msg = array('msg' => 'Error al modificar el usuario', 'icono' => 'warning');
+                
             }
         }
         }
         echo json_encode($msg, JSON_UNESCAPED_UNICODE);
         die();
     }
-
     public function editar(int $id){
         $data = $this->model->editarUser($id);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
         die();
     }
-
     public function eliminar(int $id){
         $data = $this->model->accionUser(0, $id);
         if ($data == 1) {
-            $msg = "ok";
+            $msg = array('msg' => 'Usuario eliminado con exito', 'icono' => 'success');
+
         } else {
-            $msg = "Error al eliminar usuario";
+            $msg = array('msg' => 'Error al eliminar usuario', 'icono' => 'warning');
+
         }
         echo json_encode($msg, JSON_UNESCAPED_UNICODE);
         die();
     }
-
     public function reingresar(int $id){
-        $data = $this->model->accionUser(1, $id);
-        if ($data == 1) {
-            $msg = "ok";
+        $data = $this->model->accionUser(0, $id);
+        if ($data == 0) {
+            $msg = array('msg' => 'Usuario reingresado con exito', 'icono' => 'success');
+
         } else {
-            $msg = "Error al reingresar usuario";
+            $msg = array('msg' => 'Error al reingresar usuario', 'icono' => 'warning');
+
         }
         echo json_encode($msg, JSON_UNESCAPED_UNICODE);
         die();
     }
-
     public function salir(){
         session_destroy();
         header("location: ".base_url);

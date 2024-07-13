@@ -2,23 +2,23 @@
 <ol class="breadcrumb mb-4">
   <li class="breadcrumb-item active" aria-current="page">Ordenes de Mantenimiento</li>
 </ol>
-
-<table class="table table-light" id="tblOrdenes">
-  <thead class="thead-dark">
-    <tr>
-      <th>Orden</th>
-      <th>Preventivo</th>
-      <th>Maquina</th>
-      <th>Tecnico</th>
-      <th>Fecha y Hora</th>
-      <th>Tiempo</th>
-      <th>Estado</th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-  </tbody>
-</table>
+<div class="table-responsive-xl">
+  <table class="table table-light table-hover w-100" data-order='[[ 0, "desc" ]]' data-page-length='25' id="tblOrdenes">
+    <thead class="thead-dark">
+      <tr>
+        <th>Orden</th>
+        <th>Preventivo</th>
+        <th>Tecnico</th>
+        <th>Fecha</th>
+        <th>Tiempo</th>
+        <th>Estado</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+</div>
 
 <div id="nueva-orden" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="my-modal-title" aria-hidden="true">
   <div class="modal-dialog" role="document">
@@ -80,9 +80,13 @@
               <option value="none">None</option>
             </select>
             <input id="id_tarea1" name="id_tarea1[]" type="hidden">
-          </div>  
-        <button class="btn btn-primary" type="button" onclick="registrarOrden(event);" id="btn-accion">Registrar</button>
-        <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Cancelar</button>
+          </div>   
+          <div class="d-flex justify-content-between">
+            <div>
+                <button class="btn btn-primary me-2" type="button" onclick="registrarOrden(event);" id="btn-accion">Rechazar</button>
+            </div>
+            <button class="btn btn-primary" type="button" data-bs-dismiss="modal">Cancelar</button>
+          </div>
         </form>
       </div>
     </div>

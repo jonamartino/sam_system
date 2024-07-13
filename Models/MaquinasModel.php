@@ -70,6 +70,13 @@ class MaquinasModel extends Query{
         return $data;
     }
 
+    public function verificarPermiso(int $id_usuario, string $nombre){
+        $sql = "SELECT p.id, p.nombre, ur.id_usuario FROM usuario_roles ur INNER JOIN roles r ON ur.id_rol = r.id INNER JOIN
+        roles_permisos rp ON r.id = rp.id_roles INNER JOIN permisos p ON rp.id_permisos = p.id WHERE ur.id_usuario =$id_usuario AND p.nombre = '$nombre'";
+        $data = $this->selectAll($sql);
+        return $data;
+    }
+
 }
 
 ?>

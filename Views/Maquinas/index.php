@@ -2,21 +2,25 @@
 <ol class="breadcrumb mb-4">
     <li class="breadcrumb-item active" aria-current="page">Maquinas</li>
 </ol>
+<?php if ($data['verificarAgregar']): ?>
 <button class="btn btn-primary mb-2" type="button" onclick="frmMaquina();"><i class="fa-solid fa-user-plus"></i></button>
-<table class="table table-light" id="tblMaquinas">
-    <thead class="thead-dark">
-        <tr>
-            <th>Numero Maquina</th>  
-            <th>Maquina</th>
-            <th>Tipo</th>
-            <th>Celda</th>
-            <th>Estado</th>   
-            <th></th> 
-        </tr>
-    </thead>
-    <tbody>
-    </tbody>
-</table>
+<?php endif; ?>
+<div class="table-responsive-xl">
+    <table class="table table-light w-100" id="tblMaquinas">
+        <thead class="thead-dark">
+            <tr>
+                <th>Numero Maquina</th>  
+                <th>Maquina</th>
+                <th>Tipo</th>
+                <th>Celda</th>
+                <th class="w-auto">Estado</th>   
+                <th></th> 
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
 <div id="nueva-maquina" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="my-modal-title" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">

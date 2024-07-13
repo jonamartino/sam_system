@@ -10,16 +10,18 @@
         <link href="<?php echo base_url;?>Assets/css/styles.css" rel="stylesheet" />
         <link href="<?php echo base_url;?>Assets/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
         <link href="<?php echo base_url;?>Assets/css/bootstrap.min.css" rel="stylesheet">
+        <link href="<?php echo base_url;?>Assets/css/icon.css" rel="stylesheet">
+        <link href="<?php echo base_url;?>Assets/css/css2.css" rel="stylesheet"/>
         <script src="<?php echo base_url;?>Assets/js/all.js" crossorigin="anonymous"></script>
     </head>
     <body class="sb-nav-fixed">
         <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
             <!-- Navbar Brand-->
-            <a class="navbar-brand ps-3" href="<?php echo base_url; ?>">
-                <img src="Assets/img/SAM3.png" alt="Logo de SAM" height="140">
+            <a class="navbar-brand ps-3" href="<?php echo base_url;?>Administracion/home">
+                <img src="<?php echo base_url;?>Assets/img/SAM8.png" alt="Logo de SAM" height="40">
             </a>
             <!-- Sidebar Toggle-->
-            <button class="btn btn-link btn-sm order-1 order-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
+            <button class="btn btn-link" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
             <!-- Navbar-->
             <ul class="navbar-nav ml-auto ">
                 <li class="nav-item dropdown">
@@ -38,40 +40,47 @@
                 <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
                     <div class="sb-sidenav-menu">
                         <div class="nav">
-                            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#modulo-seguridad" aria-expanded="false" aria-controls="collapseLayouts">
+                            <a class="nav-link collapsed" href="" data-bs-toggle="collapse" data-bs-target="#modulo-seguridad1" aria-expanded="false" aria-controls="#modulo-seguridad1">
                                 <div class="sb-nav-link-icon"><i class="fa-solid fa-key"></i></div>
-                                Modulo de Seguridad
+                                Administración
                                 <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                             </a>
-                            <div class="collapse" id="modulo-seguridad" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                            <div class="collapse" id="modulo-seguridad1" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav">
                                     <a class="nav-link" href="<?php echo base_url;?>Usuarios"><i class= "fas fa-user mr-2"></i>Usuarios</a>
                                     <a class="nav-link" href="<?php echo base_url;?>Personas"><i class="fa-solid fa-users mr-2"></i>Personas</a>
                                     <a class="nav-link" href="#"><i class="fa-solid fa-unlock-keyhole mr-2"></i>Permisos</a>
-                                    <a class="nav-link" href="#"><i class="fa-solid fa-user-group mr-2"></i>Roles</a>
+                                    <a class="nav-link" href="<?php echo base_url;?>Roles"><i class="fa-solid fa-user-group mr-2"></i>Roles</a>
+                                    <a class="nav-link" href="<?php echo base_url;?>Administracion"><i class="fa-solid fa-tools mr-2"></i>Configuración</a>
                                 </nav>
                             </div>
                             
+                            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#modulo-preventivos" aria-expanded="false" aria-controls="modulo-preventivos">
+                                <div class="sb-nav-link-icon"><i class="fa-solid fa-gear"></i></div>
+                                Modulo Preventivos
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse" id="modulo-preventivos" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="<?php echo base_url; ?>Preventivos"><i class="fa-solid fa-wrench mr-2"></i>Preventivos Activos</a>
+                                    <a class="nav-link" href="<?php echo base_url; ?>Preventivos/inactivos"><i class="fa-solid fa-wrench mr-2"></i>Preventivos Inactivos</a>
+                                    <a class="nav-link" href="<?php echo base_url; ?>Ordenes"><i class="fa-solid fa-pen-to-square mr-2"></i>Ordenes Activas</a>
+                                    <a class="nav-link" href="<?php echo base_url; ?>OrdenesCerradas"><i class="fa-solid fa-pen-to-square mr-2"></i>Ordenes Cerradas</a>
+                                </nav>
+                            </div>
+
                             <a class="nav-link" href="<?php echo base_url; ?>Maquinas">
                                 <div class="sb-nav-link-icon"><i class="fa-solid fa-gears"></i></div>
                                 Maquinas
                             </a>
-                            
-                            <a class="nav-link" href="<?php echo base_url; ?>Preventivos">
-                                <div class="sb-nav-link-icon"><i class="fa-solid fa-wrench"></i></div>
-                                Preventivos
-                            </a>
-                            <a class="nav-link" href="<?php echo base_url; ?>Ordenes">
-                                <div class="sb-nav-link-icon"><i class="fa-solid fa-pen-to-square"></i></div>
-                                Orden Mantenimiento
-                            </a>
+
 
                             
                         </div>
                     </div>
                     <div class="sb-sidenav-footer">
-                        <div class="small">Logged in as:</div>
-                        Start Bootstrap
+                        <div class="small">Logged in as: <?php echo $_SESSION['usuario']; ?></div>
+                        SAM System
                     </div>
                 </nav>
             </div>

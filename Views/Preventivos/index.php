@@ -2,27 +2,32 @@
 <ol class="breadcrumb mb-4">
   <li class="breadcrumb-item active" aria-current="page">Preventivos</li>
 </ol>
+<?php if ($data['verificarAgregar']): ?>
 <button class="btn btn-primary mb-2" type="button" onclick="frmPreventivo();"><i class="fa-solid fa-file-circle-plus"></i></button>
-<table class="table table-light" id="tblPreventivos">
-  <thead class="thead-dark">
-    <tr>
-      <th>#</th>
-      <th>Maquina</th>
-      <th>Tecnico</th>
-      <th>Fecha Programada</th>
-      <th>Descripcion</th>
-      <th>Estado</th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-  </tbody>
-</table>
+<?php endif; ?>
+<div class="table-responsive-xl table-fixed text-nowrap">
+    <table class="table table-light table-hover w-100" data-order='[[ 0, "desc" ]]' data-page-length='25' id="tblPreventivos">
+    <caption>Lista de mantenimientos preventivos</caption>
+    <thead class="thead-dark">
+        <tr>
+        <th>#</th>
+        <th>Máquina</th>
+        <th class="w-auto">Técnico</th>
+        <th>Fecha Programada</th>
+        <th class="w-25">Descripcion</th>
+        <th>Estado</th>
+        <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+    </table>
+</div>
 <div id="nuevo-preventivo" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="my-modal-title" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header bg-primary">
-                <h5 class="modal-title text-white" id="title">Nuevo Empleado</h5>
+                <h5 class="modal-title text-white" id="title">Nuevo Preventivo</h5>
                 <button class="close text-white" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -64,6 +69,15 @@
                         </div>
                     </div>
                     <div class="form-group">
+                        <label for="frecuencia">Frecuencia</label>
+                        <select id="frecuencia" class="form-control" type="text" name="frecuencia" placeholder="Frecuencia">
+                        <option value="" disabled selected>Selecciona una Frecuencia</option>
+                        <?php foreach ($data['frecuencia'] as $row) { ?>
+                            <option value="<?php echo $row['id']; ?>"><?php echo $row['nombre']," - ",$row['frecuencia_dias']; ?> </option>
+                        <?php } ?>
+                        </select>
+                    </div>
+                    <div class="form-group">
                         <label for="descripcion">Descripcion</label>
                         <textarea id="descripcion" class="form-control" type="text" name="descripcion" rows="3" placeholder="Descripcion breve del preventivo" multiple></textarea>
                     </div>     
@@ -77,8 +91,12 @@
                         </select>
                         <input id="id_tarea1" name="id_tarea1[]" type="hidden">
                     </div>
-                <button class="btn btn-primary" type="button" onclick="registrarPreventivo(event);" id="btn-accion">Registrar</button>
-                <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Cancelar</button>
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <button class="btn btn-primary me-2" type="button" onclick="registrarPreventivo(event);" id="btn-accion">Rechazar</button>
+                        </div>
+                        <button class="btn btn-primary" type="button" data-bs-dismiss="modal">Cancelar</button>
+                    </div>
                 </form>
             </div>
         </div>

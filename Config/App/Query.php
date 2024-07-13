@@ -1,10 +1,13 @@
 <?php
-Class Query extends Conexion{
-    private $pdo, $con, $sql, $datos;
-    public function __construct(){
-        $this->pdo = new Conexion();
-        $this->con = $this->pdo->connect();
+Class Query {
+    private $con, $sql, $datos;
+
+    public function __construct()
+    {
+        // Obtengo la instancia unica de la conexion a la base de datos
+        $this->con = Conexion::getInstance()->connect();
     }
+
     public function select(string $sql)
     {
         $this->sql = $sql;
