@@ -2,7 +2,7 @@
 <ol class="breadcrumb mb-4">
     <li class="breadcrumb-item active" aria-current="page">Empleados</li>
 </ol>
-<button class="btn btn-primary mb-2" type="button" onclick="frmPersona();"><i class="fa-solid fa-user-plus"></i></button>
+<button class="btn btn-primary mb-2 btn-sm" type="button" onclick="frmPersona();"><i class="fa-solid fa-user-plus"></i> Nuevo Empleado</button>
 <div class="table-responsive-xl table-fixed text-nowrap">
     <table class="table table-light table-striped w-100" id="tblPersonas">
         <thead class="thead-dark">

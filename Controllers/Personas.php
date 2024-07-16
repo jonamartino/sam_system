@@ -18,14 +18,17 @@ class Personas extends Controller{
         for ($i=0; $i < count($data); $i++){
             if ($data[$i]['estado'] == 1) {
                 $data[$i]['estado'] = '<span class="badge badge-success">Activa</span>';
+                $data[$i]['acciones'] = '<div>
+                <button class= "btn btn-primary btn-sm" type="button" onclick="btnEditarPersona('.$data[$i]['legajo'].')"><i class="fa-solid fa-user-pen"></i></button>
+                <button class= "btn btn-danger btn-sm" type="button" onclick="btnEliminarPersona('.$data[$i]['legajo'].')"><i class="fa-solid fa-user-slash"></i></button>
+                <div/>';
             }else{
                 $data[$i]['estado'] = '<span class="badge badge-danger">Inactiva</span>';
+                $data[$i]['acciones'] = '<div>
+                <button class= "btn btn-primary btn-sm" type="button" onclick="btnEditarPersona('.$data[$i]['legajo'].')"><i class="fa-solid fa-user-pen"></i></button>
+                <button class= "btn btn-success btn-sm" type="button" onclick="btnReingresarPersona('.$data[$i]['legajo'].')"><i class="fa-solid fa-user-check"></i></button>
+                <div/>';
             }
-            $data[$i]['acciones'] = '<div>
-            <button class= "btn btn-primary" type="button" onclick="btnEditarPersona('.$data[$i]['legajo'].')"><i class="fa-solid fa-user-pen"></i></button>
-            <button class= "btn btn-danger" type="button" onclick="btnEliminarPersona('.$data[$i]['legajo'].')"><i class="fa-solid fa-user-slash"></i></button>
-            <button class= "btn btn-success" type="button" onclick="btnReingresarPersona('.$data[$i]['legajo'].')"><i class="fa-solid fa-user-check"></i></button>
-            <div/>';
         }
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
         die();

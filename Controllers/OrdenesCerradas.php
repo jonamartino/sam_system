@@ -69,12 +69,12 @@ class OrdenesCerradas extends Controller{
         */
         for ($i = 0; $i < count($data); $i++) {
             if ($data[$i]['estado'] == 5){
-              $data[$i]['estado'] = '<span class="badge badge-dark">Completado</span>';
+              $data[$i]['estado'] = '<span class="badge badge-success">Completado</span>';
               $data[$i]['acciones'] = '<div class="btn-group" role="group">
               <a class="link-dark" href="'.base_url. "OrdenesCerradas/generarPDF/".$data[$i]['id_orden'].'" target="_blank" rel="noopener"><i class="fa-solid fa-file-pdf fs-5"></i></a>
               </div>'; 
             } else if ($data[$i]['estado'] == 6){
-              $data[$i]['estado'] = '<span class="badge badge-dark">Cancelado</span>';
+              $data[$i]['estado'] = '<span class="badge badge-success">Cancelado</span>';
               $data[$i]['acciones'] = '<div class="btn-group" role="group">
               <a class="link-dark" href="'.base_url. "OrdenesCerradas/generarPDF/".$data[$i]['id_orden'].'" target="_blank" rel="noopener"><i class="fa-solid fa-file-pdf fs-5"></i></a>    
               </div>';

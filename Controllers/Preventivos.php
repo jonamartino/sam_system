@@ -23,26 +23,47 @@ class Preventivos extends Controller {
             $data['personas'] = $this->model->getPersonas();
             $data['usuarios'] = $this->model->getUsuarios();
             $data['frecuencia'] = $this->model->getFrecuencias();
+            $data['tipos'] = $this->model->getTipos();
             $this->views->getView($this, "index", $data);
         } else {
             header('Location: '.base_url.'Errors/permisos');
         }
-
     }
-
+    public function pendientes() {
+        $this->views->getView($this, "pendientes");
+    }
     public function vencidos(){
       $this->views->getView($this, "vencidos");
     }    
     public function avencer(){
         $this->views->getView($this, "avencer");
     }
-
     public function inactivos(){
         $this->views->getView($this, "inactivos");
     }
-
     public function listarTareas(int $id_seleccion) {
         $data = $this->model->getTareas($id_seleccion);
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+        die();
+    }
+    public function listarPendientes() {
+        $id_usuario = $_SESSION['id_usuario'];
+        $permisos = $this->model->verificarPermisos($id_usuario);
+        $rol = $this->model->getRolUsuario($id_usuario);
+        if ($rol['nombre'] == 'Administrativo') {
+            $data = $this->model->getPreventivosPendientesAdmin();
+        } else if($rol['nombre'] == 'Supervisor'){
+            $data = $this->model->getPreventivosPendientesSuper();
+        }
+        $verificar = [];
+        foreach ($permisos as $permiso) {
+            $verificar[$permiso['nombre']] = true;
+        }
+        for ($i = 0; $i < count($data); $i++) {
+            $this->setEstado($data[$i]['estado']);
+            $data[$i]['estado'] = $this->estado->mostrarEstado();
+            $data[$i]['acciones'] = $this->estado->definirAcciones($data[$i],$verificar);
+        }
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
         die();
     }
@@ -181,6 +202,7 @@ class Preventivos extends Controller {
                             $validacionTarea = $this->model->registrarPreventivoTareas($id_tarea, $id_preventivo);                            
                         }
                     }
+                    $this->model->registrarNotificacion($id_usuario, "Preventivo $id_preventivo ha sido creado.", 3, 'pendiente');
                     $msg = array('msg' => 'Preventivo creado', 'icono' => 'success');
                 } else if ($data == "existe") {
                     $msg = array('msg' => 'El preventivo ya existe', 'icono' => 'warning');
@@ -197,6 +219,7 @@ class Preventivos extends Controller {
                 foreach ($tareas as $id_tarea) {
                     $validacionTarea = $this->model->registrarPreventivoTareas($id_tarea, $id_preventivo);                            
                 }
+                $this->model->registrarNotificacion($id_usuario, "Preventivo $id_preventivo ha sido creado.", 3, 'pendiente');
                 $msg = array('msg' => 'Preventivo modificado', 'icono' => 'success');
             } else if ($data == "existe") {
                 $msg = "El preventivo ya existe";
@@ -215,6 +238,40 @@ class Preventivos extends Controller {
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
         die();
     } 
+    public function editarTarea(int $id_maquina){
+        $data = $this->model->getTipo($id_maquina);
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+        die();
+    } 
+    public function registrarTarea(){
+        $id_tipo = $_POST["id_tipo"];
+        $id_tarea = $_POST["id_tarea"];
+        $nombre_tarea = $_POST["nombre_tarea"];
+        $tiempo = $_POST["tiempo"];
+        if(empty($id_tipo) || empty($nombre_tarea) || empty($tiempo)){
+            $msg = array('msg' => 'Todos los campos son obligatorios', 'icono' => 'warning');
+        }else{
+            if ($id_tarea == "") {
+                $data = $this->model->registrarTarea($id_tipo, $nombre_tarea, $tiempo);
+                if($data == "OK"){
+                    $msg = array('msg' => 'Nueva tarea creada', 'icono' => 'success');
+                } else if ($data == "existe") {
+                    $msg = array('msg' => 'La tarea ya existe', 'icono' => 'warning');
+                } else { 
+                    $msg = array('msg' => 'Error al registrar la tarea', 'icono' => 'warning');
+                }
+        }else{
+            $data = $this->model->modificarTarea($id_tipo, $nombre_tarea, $tiempo, $id_tarea);
+            if($data == "modificado"){
+                $msg = array('msg' => 'Tarea modificada', 'icono' => 'success');
+            } else { 
+                $msg = array('msg' => 'Error al registrar la tarea', 'icono' => 'warning');
+            }
+        }
+        }
+        echo json_encode($msg, JSON_UNESCAPED_UNICODE);
+        die();
+    }
     public function rechazar(int $id_preventivo){
         $id_usuario = $_SESSION['id_usuario'];
         $data = $this->model->accionPreventivo(2, $id_preventivo);
@@ -222,6 +279,7 @@ class Preventivos extends Controller {
             $accionPreventivo = 'Rechazar';
             $msg = array('msg' => 'Preventivo Rechazado con éxito', 'icono' => 'success');
             $data1 = $this->model->accionAuditoriaPreventivo($id_preventivo, $id_usuario, $accionPreventivo);
+            $this->model->registrarNotificacion($id_usuario, "Preventivo $id_preventivo ha sido rechazado.", 2, 'rechazado');
         } else {
             $msg = array('msg' => 'Error al rechazar el Preventivo', 'icono' => 'warning');
         }
@@ -236,6 +294,7 @@ class Preventivos extends Controller {
                $msg = array('msg' => 'Preventivo aprobado con éxito', 'icono' => 'success');
                $data1 = $this->model->accionAuditoriaPreventivo($id_preventivo, $id_usuario, $accionPreventivo);
                $data2 = $this->model->agregaAprobacionPreventivo($id_preventivo, $id_usuario);
+               $this->model->registrarNotificacion($id_usuario, "Preventivo $id_preventivo ha sido aprobado.", 2, 'aprobado');
            } else {
                $msg = array('msg' => 'Error al aprobar el Preventivo', 'icono' => 'warning');
            }
@@ -394,7 +453,36 @@ class Preventivos extends Controller {
     
         // Salida del PDF
         $pdf->Output();
-    }        
+    }     
+    public function obtenerNotificaciones() {
+        $id_usuario = $_SESSION['id_usuario'];
+        $data = $this->model->obtenerNotificaciones($id_usuario);
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+        die();
+    }
+    public function marcarNotificacionLeida($id_notificacion) {
+        // Aquí deberías realizar la actualización en la base de datos
+        $success = $this->model->marcarNotificacionComoLeida($id_notificacion);
+        if ($success) {
+            echo json_encode(['success' => true]);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Error al marcar la notificación como leída']);
+        }
+        die();
+    }
+    public function obtenerTareasPendientes() {
+        $id_usuario = $_SESSION['id_usuario'];
+        $rol = $this->model->getRolUsuario($id_usuario);
+        if ($rol['nombre'] == 'Administrativo') {
+            $data = $this->model->obtenerTareasPendientesAdmin();
+        } else if($rol['nombre'] == 'Supervisor'){
+            $data = $this->model->obtenerTareasPendientesSuper();
+        }
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+        die();
+    }
+
+    
     
 }
 ?>

@@ -17,15 +17,37 @@
     <body class="sb-nav-fixed">
         <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
             <!-- Navbar Brand-->
-            <a class="navbar-brand ps-3" href="<?php echo base_url;?>Administracion/home">
+            <a class="navbar-brand" href="<?php echo base_url;?>Administracion/home">
                 <img src="<?php echo base_url;?>Assets/img/SAM8.png" alt="Logo de SAM" height="40">
             </a>
             <!-- Sidebar Toggle-->
-            <button class="btn btn-link" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
+            <button class="btn btn-link" id="sidebarToggle" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
             <!-- Navbar-->
             <ul class="navbar-nav ml-auto ">
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
+                    <a class="nav-link me-2" href="#" id="tasksDropdownToggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fa-solid fa-inbox"></i>
+                        <span id="tasksCount" class="badge bg-danger"></span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" id="tasksDropdown" aria-labelledby="notificationDropdownToggle">
+                        <li><a class="dropdown-item" href="#!">Tareas Pendientes</a></li>
+                        <li><hr class="dropdown-divider" /></li>
+                        <!-- Las notificaciones se cargarán aquí -->
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link me-2" href="#" id="notificationDropdownToggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fa fa-bell"></i>
+                        <span id="notificationCount" class="badge bg-danger"></span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" id="notificationDropdown" aria-labelledby="notificationDropdownToggle">
+                        <!-- Las notificaciones se cargarán aquí -->
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle me-2" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                         <li><a class="dropdown-item" href="#!">Perfil</a></li>
                         <li><a class="dropdown-item" href="#!">Activity Log</a></li>
@@ -49,7 +71,7 @@
                                 <nav class="sb-sidenav-menu-nested nav">
                                     <a class="nav-link" href="<?php echo base_url;?>Usuarios"><i class= "fas fa-user mr-2"></i>Usuarios</a>
                                     <a class="nav-link" href="<?php echo base_url;?>Personas"><i class="fa-solid fa-users mr-2"></i>Personas</a>
-                                    <a class="nav-link" href="#"><i class="fa-solid fa-unlock-keyhole mr-2"></i>Permisos</a>
+                                    <a class="nav-link" href="<?php echo base_url;?>Roles/permisos"><i class="fa-solid fa-key mr-2"></i>Permisos</a>
                                     <a class="nav-link" href="<?php echo base_url;?>Roles"><i class="fa-solid fa-user-group mr-2"></i>Roles</a>
                                     <a class="nav-link" href="<?php echo base_url;?>Administracion"><i class="fa-solid fa-tools mr-2"></i>Configuración</a>
                                 </nav>
@@ -69,9 +91,14 @@
                                 </nav>
                             </div>
 
+                            
                             <a class="nav-link" href="<?php echo base_url; ?>Maquinas">
                                 <div class="sb-nav-link-icon"><i class="fa-solid fa-gears"></i></div>
                                 Maquinas
+                            </a>
+                            <a class="nav-link" href="<?php echo base_url; ?>Maquinas/tareas">
+                                <div class="sb-nav-link-icon"><i class="fa-solid fa-tasks"></i></div>
+                                Tareas
                             </a>
 
 

@@ -44,9 +44,11 @@
                         <label for="descripcion">Descripción del rol</label>
                         <input id="descripcion" class="form-control" type="text" name="descripcion" placeholder="Descripción del rol">
                     </div>
-                    <button class="btn btn-primary" type="button" onclick="registrarRol(event);" id="btn-accion">Registrar</button>
-                    <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Cancelar</button>
                 </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" type="button" onclick="registrarRol(event);" id="btn-accion">Registrar</button>
+                <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Cancelar</button>
             </div>
         </div>
     </div>
@@ -83,17 +85,54 @@
                         </div>
                         <div class="col-md-2 d-flex flex-column align-items-center justify-content-center">
                             <div style="height: 35px;"></div>
-                            <button type="button" class="btn btn-primary mb-2" onclick="agregarPermiso()">></button>
-                            <button type="button" class="btn btn-danger" onclick="quitarPermiso()"><</button>
+                            <button type="button" class="btn btn-primary mb-2 btn-sm " onclick="agregarPermiso()">></button>
+                            <button type="button" class="btn btn-danger btn-sm" onclick="quitarPermiso()"><</button>
                         </div>
                         <div class="col-md-5">
                             <label for="listPermisosAsignados">Permisos asignados</label>
                             <select multiple class="form-control" id="listPermisosAsignados"></select>
                         </div>
                     </div>
-                    <button class="btn btn-primary mt-2" type="button" onclick="guardarPermisos(event);" id="btn-accion-permisos">Guardar</button>
-                    <button class="btn btn-danger mt-2" type="button" data-bs-dismiss="modal">Cancelar</button>
+                    <button class="btn btn-info me-2 btn-sm btn-block" type="button" data-bs-target="#staticBackdrop" onclick="frmPermiso();">Crear nuevo permiso</button>
                 </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary mt-2" type="button" onclick="guardarPermisos(event);" id="btn-accion-permisos">Guardar</button>
+                <button class="btn btn-danger mt-2" type="button" data-bs-dismiss="modal">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="nuevo-permiso" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="my-modal-title" aria-hidden="true">
+    <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-info">
+                <h5 class="modal-title text-white" id="title">Nuevo Permiso</h5>
+                <button class="close text-white" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" id="frmPermiso">
+                    <div class="form-group">
+                        <label for="id_permiso">ID</label>
+                        <input id="id_permiso" class="form-control" type="text" name="id_permiso" readonly >
+                    </div>
+                    <div class="form-group">
+                        <label for="nombre_permiso">Nombre del Permiso</label>
+                        <input type="hidden" id="id" name="id">
+                        <input id="nombre_permiso" class="form-control" type="text" name="nombre_permiso" placeholder="Nombre del Permiso">
+                    </div>
+                    <div class="form-group">
+                        <label for="descripcion_permiso">Descripción del Permiso</label>
+                        <input id="descripcion_permiso" class="form-control" type="text" name="descripcion_permiso" placeholder="Descripción del Permiso">
+                    </div>                    
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" type="button" onclick="registrarPermiso(event);" id="btn-accion">Registrar</button>
+                <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Cancelar</button>
             </div>
         </div>
     </div>

@@ -23,8 +23,8 @@
     </tbody>
     </table>
 </div>
-<div id="nuevo-preventivo" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="my-modal-title" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+<div id="nuevo-preventivo" class="modal fade" data-bs-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="my-modal-title" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header bg-primary">
                 <h5 class="modal-title text-white" id="title">Nuevo Preventivo</h5>
@@ -90,14 +90,56 @@
                         <?php } ?>
                         </select>
                         <input id="id_tarea1" name="id_tarea1[]" type="hidden">
+                        <button class="btn btn-info me-2 btn-sm btn-block" type="button" data-bs-target="#staticBackdrop" onclick="frmTarea(id_maquina);">Crear Nueva Tarea</button>
                     </div>
-                    <div class="d-flex justify-content-between">
+                </form>
+            </div>
+            <div class="modal-footer">
+            <div class="d-flex justify-content-between">
                         <div>
                             <button class="btn btn-primary me-2" type="button" onclick="registrarPreventivo(event);" id="btn-accion">Rechazar</button>
                         </div>
-                        <button class="btn btn-primary" type="button" data-bs-dismiss="modal">Cancelar</button>
+                        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancelar</button>
                     </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="nueva-tarea" class="modal fade" data-bs-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="my-modal-title" aria-hidden="true">
+    <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-info">
+                <h5 class="modal-title text-white" id="title">Crear nueva tarea</h5>
+                <button class="close text-white" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" id="frmTareas">
+                    <div class="form-group">
+                        <label for="id_tipo">Tipo de máquina</label>
+                        <input  name="id_tarea" id="id_tarea" type="hidden">
+                        <select id="id_tipo" selected class="form-control" type="text" name="id_tipo" placeholder="Tipo">
+                        <option value="" disabled selected>Selecciona un tipo de máquina</option>
+                            <?php foreach ($data['tipos'] as $row) { ?>
+                                <option value="<?php echo $row['id_tipo']; ?>"><?php echo $row['id_tipo']," - ",$row['nombre']; ?> </option>
+                            <?php } ?>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="nombre_tarea">Nombre de la tarea</label>
+                        <textarea id="nombre_tarea" class="form-control" type="text" name="nombre_tarea" rows="2" placeholder="Nombre descriptivo de la tarea" multiple></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="tiempo">Tiempo de realización</label>
+                        <input type="number" id="tiempo" name="tiempo" step="1" min="0" max="20" placeholder="0" class="form-control">
+                    </div>  
                 </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary mt-2" type="button" onclick="registrarTarea(event);" id="btn-accion-tareas">Guardar</button>
+                <button class="btn btn-secondary mt-2" type="button" data-bs-dismiss="modal">Cancelar</button>
             </div>
         </div>
     </div>

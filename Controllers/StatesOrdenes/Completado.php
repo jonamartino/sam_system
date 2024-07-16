@@ -3,7 +3,7 @@ require_once 'EstadoOrden.php';
 
 class Completado implements EstadoOrden {
     public function mostrarEstado() {
-        return '<span class="badge badge-dark">id_orden</span>';
+        return '<span class="badge badge-success">id_orden</span>';
     }
 
     public function definirAcciones($id_orden, $verificar) {

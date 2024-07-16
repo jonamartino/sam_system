@@ -1,22 +1,18 @@
 <?php
 class RolesModel extends Query {
-    
   public function __construct() {
       parent::__construct();
   }
-
   public function getRoles() {
       $sql = "SELECT * FROM roles";
       $data = $this->selectAll($sql);
       return $data;
   }
-
   public function getPermisos() {
       $sql = "SELECT * FROM permisos";
       $data = $this->selectAll($sql);
       return $data;
   }
-
   public function registrarRol(string $nombre, string $descripcion) {
     $this->nombre = $nombre;
     $this->descripcion = $descripcion;
@@ -28,9 +24,21 @@ class RolesModel extends Query {
     } else {
         $res = "error";
     }
-  return $res;
+    return $res;
   }
-
+  public function registrarPermiso(string $nombre, string $descripcion) {
+    $this->nombre = $nombre;
+    $this->descripcion = $descripcion;
+      $sql = "INSERT INTO permisos (nombre, descripcion) VALUES (?, ?)";
+      $datos = array($this->nombre,$this->descripcion);
+      $data = $this->save($sql, $datos);
+      if($data==1){
+        $res = "OK";
+    } else {
+        $res = "error";
+    }
+    return $res;
+  }
   public function modificarRol(string $nombre, string $descripcion, int $id){
     $this->id = $id;
     $this->nombre = $nombre;
@@ -45,19 +53,35 @@ class RolesModel extends Query {
         }
     return $res;
   }
-
+  public function modificarPermiso(string $nombre, string $descripcion, int $id){
+    $this->id = $id;
+    $this->nombre = $nombre;
+    $this->descripcion = $descripcion;
+        $sql = "UPDATE permisos SET nombre = ?, descripcion = ? WHERE id = ?";
+        $datos = array($this->nombre, $this->descripcion,$this->id);
+        $data = $this->save($sql,$datos);
+        if($data==1){
+            $res = "modificado";
+        } else {
+            $res = "error";
+        }
+    return $res;
+  }
   public function editar(int $id){
     $sql = "SELECT * FROM roles WHERE id = $id";
     $data = $this->select($sql);
     return $data;
   }
-
+  public function editarPermiso(int $id){
+    $sql = "SELECT * FROM permisos WHERE id = $id";
+    $data = $this->select($sql);
+    return $data;
+  }
   public function editarRolPermisos(int $id){
     $sql = "SELECT * FROM roles WHERE id = $id";
     $data = $this->select($sql);
     return $data;
   }
-
   public function getPermisosAsignados(int $id) {
     $sql = "SELECT p.id, p.nombre 
             FROM permisos p
@@ -66,7 +90,6 @@ class RolesModel extends Query {
     $data = $this->selectAll($sql);
     return $data;
   }
-
   public function getPermisosNoAsignados(int $id) {
     $sql = "SELECT p.id, p.nombre 
                 FROM permisos p
@@ -77,7 +100,6 @@ class RolesModel extends Query {
     $data = $this->selectAll($sql);
     return $data;
   }
-
   public function eliminarPermisos(int $id) {
     $this->id_roles = $id;
     $sql = "DELETE FROM roles_permisos WHERE id_roles = ?";
@@ -90,7 +112,18 @@ class RolesModel extends Query {
     }
     return $res;
   }
-
+  public function eliminarPermiso(int $id){
+    $this->id = $id;
+    $sql = "DELETE FROM permisos WHERE id = ?";
+    $datos = array($this->id);
+    $data = $this->delete($sql, $datos);
+    if($data==1){
+      $res = "OK";
+    } else {
+        $res = "error";
+    }
+    return $res;
+  }   
   public function asignarPermiso(int $idRol, int $idPermiso) {
     $this->id_roles = $idRol;
     $this->id_permisos = $idPermiso;
@@ -99,5 +132,4 @@ class RolesModel extends Query {
     $data = $this->save($sql,$datos);
     return $data;
   }
-    
 }

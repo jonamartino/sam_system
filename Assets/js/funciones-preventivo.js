@@ -32,7 +32,6 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
 })
-
 let tblPreventivosInactivos;
 document.addEventListener("DOMContentLoaded", function () {
   tblPreventivosInactivos = $('#tblPreventivosInactivos').DataTable({
@@ -66,8 +65,6 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
 })
-
-
 let tblPreventivosAVencer;
 document.addEventListener("DOMContentLoaded", function () {
   tblPreventivosAVencer = $('#tblPreventivosAVencer').DataTable({
@@ -101,8 +98,6 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
 })
-
-
 let tblPreventivosVencidos;
 document.addEventListener("DOMContentLoaded", function () {
   tblPreventivosVencidos = $('#tblPreventivosVencidos').DataTable({
@@ -136,10 +131,40 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
 })
+let tblPreventivosPendientes;
+document.addEventListener("DOMContentLoaded", function () {
+  tblPreventivosPendientes = $('#tblPreventivosPendientes').DataTable({
+    ajax: {
+      url: base_url + "Preventivos/listarPendientes",
+      dataSrc: ''
+    },
+    columns: [
+      {
+        'data': 'id_preventivo'
+      },
+      {
+        'data': 'maq'
+      },
+      {
+        'data': 'orden'
+      },
+      {
+        'data': 'fecha'
+      },
+      {
+        'data': 'descripcion'
+      },
+      {
+        'data': 'estado'
+      },
+      {
+        'data': 'acciones'
+      }
+    ]
+  });
 
-
-
-
+})
+//formulario preventivo
 function frmPreventivo() {
   document.getElementById("title").innerHTML = "Nuevo Preventivo";
   document.getElementById("btn-accion").innerHTML = "Registrar";
@@ -178,7 +203,7 @@ function getTareas() {
     http.send();
   }
 }
-function registrarPreventivo(e) {
+function registrarPreventivo(e) { 
   e.preventDefault();
   const id_maquina = document.getElementById("id_maquina");
   console.log(id_maquina.value);
@@ -433,7 +458,6 @@ function btnCargarOrden(id_preventivo) {
     }
   });
 }
-
 function btnCancelarPreventivo(id_preventivo) {
   Swal.fire({
     title: "¿Está seguro de cancelar el preventivo?",
@@ -460,5 +484,168 @@ function btnCancelarPreventivo(id_preventivo) {
     }
   });
 }
+
+function frmTarea(id_maquina) {
+  document.getElementById("frmTareas").reset();
+  if(id_maquina.value == ''){
+    document.getElementById("id_tipo").value = '';
+    $("#nueva-tarea").modal("show");
+  }else{
+    console.log(id_maquina.value);
+    const url = base_url + "Preventivos/editarTarea/" + id_maquina.value;
+    const http = new XMLHttpRequest();
+    http.open("GET", url, true);
+    http.send();
+    http.onreadystatechange = function () {
+      if (this.readyState == 4 && this.status == 200) {
+        const res = JSON.parse(this.responseText);
+        document.getElementById("id_tipo").value = res.id_tipo;
+        $("#nueva-tarea").modal("show");
+      }
+    }
+  }
+
+}
+
+function registrarTarea(e) {
+  e.preventDefault();
+  const id_tipo = document.getElementById("id_tipo");
+  const nombre_tarea = document.getElementById("nombre_tarea");
+  const tiempo = document.getElementById("tiempo");
+
+  console.log(id_tipo.value, nombre_tarea.value, tiempo.value);
+  if (id_tipo.value == "" || nombre_tarea.value == "" || tiempo.value == "" ) {
+    alertas('Todos los campos son obligatorios', 'warning');
+  } else {
+    const url = base_url + "Preventivos/registrarTarea";
+    const frm = document.getElementById("frmTareas");
+    const http = new XMLHttpRequest();
+    http.open("POST", url, true);
+    http.send(new FormData(frm));
+    http.onreadystatechange = function () {
+      if (this.readyState == 4 && this.status == 200) {
+        const res = JSON.parse(this.responseText);
+        $("#nueva-tarea").modal("hide");
+        getTareas();
+        alertas(res.msg, res.icono);
+      }
+    }
+  }
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+  cargarTareasPendientes();
+  cargarNotificaciones();
+
+  function cargarNotificaciones() {
+    const url = "/sam_system/Preventivos/obtenerNotificaciones"; // Usar URL absoluta para pruebas
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            let notificationDropdown = document.getElementById('notificationDropdown');
+            let notificationCount = document.getElementById('notificationCount');
+            notificationDropdown.innerHTML = "";
+
+            // Agregar el título "Notificaciones"
+            let titulo = document.createElement('li');
+            titulo.innerHTML = '<a class="dropdown-item font-weight-bold">Notificaciones</a>';
+            notificationDropdown.appendChild(titulo);
+
+            // Agregar el divisor
+            let divisor = document.createElement('li');
+            divisor.innerHTML = '<hr class="dropdown-divider" />';
+            notificationDropdown.appendChild(divisor);
+
+            if (data.length > 0) {
+                let unreadCount = 0;
+                data.forEach(notificacion => {
+                    let item = document.createElement('li');
+                    let tipoClase = '';
+                    if (notificacion.tipo_notificacion === 'aprobado') {
+                        tipoClase = 'alert-success'; // Bootstrap class for success text
+                    } else if (notificacion.tipo_notificacion === 'rechazado') {
+                        tipoClase = 'alert-danger'; // Bootstrap class for danger text
+                    } else if (notificacion.tipo_notificacion === 'pendiente') {
+                        tipoClase = 'alert-primary'; // Bootstrap class for primary text
+                    }
+                    item.innerHTML = `
+                    <div class="dropdown-item ${tipoClase} d-flex justify-content-between align-items-center">
+                        <span>${notificacion.mensaje}-</span>
+                        <i class="fa fa-trash" onclick="marcarComoLeida(${notificacion.notificacion_id}, this)"></i>
+                    </div>`;
+                    notificationDropdown.appendChild(item);
+                    if (!notificacion.leido) {
+                        unreadCount++;
+                    }
+                });
+                notificationCount.textContent = unreadCount;
+                notificationCount.style.display = unreadCount > 0 ? 'inline' : 'none';
+            } else {
+                notificationCount.style.display = 'none';
+                let item = document.createElement('li');
+                item.innerHTML = '<a class="dropdown-item" href="#">No hay notificaciones</a>';
+                notificationDropdown.appendChild(item);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+}
+
+  function cargarTareasPendientes() {
+    const url = "/sam_system/Preventivos/obtenerTareasPendientes";
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            let tasksCount = document.getElementById('tasksCount');
+            let tasksDropdown = document.getElementById('tasksDropdown');
+            tasksDropdown.innerHTML = "";
+
+            // Agregar el título "Tareas Pendientes"
+            let titulo = document.createElement('li');
+            titulo.innerHTML = '<a class="dropdown-item font-weight-bold">Tareas Pendientes</a>';
+            tasksDropdown.appendChild(titulo);
+
+            // Agregar el divisor
+            let divisor = document.createElement('li');
+            divisor.innerHTML = '<hr class="dropdown-divider" />';
+            tasksDropdown.appendChild(divisor);
+
+            if (data.length > 0) {
+                tasksCount.textContent = data.length;
+                data.forEach(tarea => {
+                    let item = document.createElement('li');
+                    item.innerHTML = `<a class="dropdown-item" href="/sam_system/Preventivos/pendientes">${tarea.id_preventivo} - ${tarea.descripcion}</a>`;
+                    tasksDropdown.appendChild(item);
+                });
+            } else {
+                tasksCount.textContent = '';
+                let item = document.createElement('li');
+                item.innerHTML = '<a class="dropdown-item" href="#">No hay tareas pendientes</a>';
+                tasksDropdown.appendChild(item);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+}
+  // Definir la función en el ámbito global
+  window.marcarComoLeida = function(idNotificacion, elemento) {
+      const url = `/sam_system/Preventivos/marcarNotificacionLeida/${idNotificacion}`; // Endpoint para marcar como leída
+      fetch(url, {
+          method: 'POST', // Método POST para actualizar el estado en el servidor
+      })
+      .then(response => response.json())
+      .then(data => {
+          if (data.success) {
+              elemento.classList.remove('font-weight-bold'); // Remover clase de negrita si es necesaria
+              elemento.classList.add('text-muted'); // Agregar clase de texto atenuado (opcional)
+              // Otros cambios visuales que desees aplicar
+              cargarNotificaciones(); // Recargar las notificaciones para actualizar el contador
+          } else {
+              console.error('Error al marcar como leída:', data.message);
+          }
+      })
+      .catch(error => console.error('Error:', error));
+  };
+
+  // Resto del código...
+});
 
 

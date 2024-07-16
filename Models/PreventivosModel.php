@@ -26,6 +26,45 @@ class PreventivosModel extends Query{
     $data = $this->selectAll($sql);
     return $data;
   }
+  public function getTipos(){
+    $sql = "SELECT tm.id_tipo, tm.nombre FROM tipo_maquina tm";
+    $data = $this->selectAll($sql);
+    return $data;  
+  }
+  public function getTipo(int $id_maquina){
+    $sql = "SELECT tm.id_tipo, tm.nombre AS tipo_nombre, m.id_maquina, m.nombre AS maquina_nombre FROM tipo_maquina tm INNER JOIN maquinas m ON m.id_tipo = tm.id_tipo WHERE m.id_maquina = $id_maquina";
+    $data = $this->select($sql);
+    return $data;  
+  }
+  public function registrarTarea(int $id_tipo, string $nombre_tarea, int $tiempo){
+    $this->id_tipo = $id_tipo;
+    $this->nombre = $nombre_tarea;
+    $this->tiempo_tarea = $tiempo;
+    $sql = "INSERT INTO tareas(id_tipo, nombre, tiempo_tarea) VALUES (?,?,?)";
+    $datos = array($this->id_tipo,$this->nombre,$this->tiempo_tarea);
+    $data = $this->save($sql,$datos);
+    if($data==1){
+      $res = "OK";
+    } else {
+        $res = "error";
+    }
+    return $res;
+  }
+  public function modificarTarea(int $id_tipo, string $nombre_tarea, int $tiempo, int $id_tarea){
+    $this->id_tipo = $id_tipo;
+    $this->nombre = $nombre_tarea;
+    $this->tiempo_tarea = $tiempo;
+    $this->id_tarea = $id_tarea;
+      $sql = "UPDATE tareas SET id_tipo = ?, nombre = ?, tiempo_tarea = ? WHERE id_tarea = ?";
+      $datos = array($this->id_tipo,$this->nombre,$this->tiempo_tarea, $this->id_tarea);
+      $data = $this->save($sql,$datos);
+      if($data==1){
+          $res = "modificado";
+      } else {
+          $res = "error";
+      }
+    return $res;
+  }
   public function getTiempoTarea(int $id_tarea) {
     $sql = "SELECT * FROM tareas WHERE id_tarea = $id_tarea";
     $data = $this->select($sql);
@@ -51,6 +90,18 @@ class PreventivosModel extends Query{
   public function getPreventivosVencidos(){
     $sql = "SELECT *, pr.estado, CONCAT(fecha_programada,' - ',hora_programada) as fecha, CONCAT(m.id_maquina,' - ',m.nombre) as maq, CONCAT(pe.nombre,' ',pe.apellido) as nombre_apellido FROM preventivos pr INNER JOIN personas pe ON pr.legajo = pe.legajo
     INNER JOIN maquinas m ON pr.id_maquina = m.id_maquina WHERE CONCAT(pr.fecha_programada, ' ', pr.hora_programada) < NOW()";
+    $data = $this->selectAll($sql);
+    return $data;   
+  }
+  public function getPreventivosPendientesAdmin(){
+    $sql = "SELECT *, pr.estado, CONCAT(fecha_programada,' - ',hora_programada) as fecha, CONCAT(m.id_maquina,' - ',m.nombre) as maq, CONCAT(pe.nombre,' ',pe.apellido) as nombre_apellido FROM preventivos pr INNER JOIN personas pe ON pr.legajo = pe.legajo
+    INNER JOIN maquinas m ON pr.id_maquina = m.id_maquina WHERE pr.estado = 1 OR pr.estado = 2";
+    $data = $this->selectAll($sql);
+    return $data;   
+  }
+  public function getPreventivosPendientesSuper(){
+    $sql = "SELECT *, pr.estado, CONCAT(fecha_programada,' - ',hora_programada) as fecha, CONCAT(m.id_maquina,' - ',m.nombre) as maq, CONCAT(pe.nombre,' ',pe.apellido) as nombre_apellido FROM preventivos pr INNER JOIN personas pe ON pr.legajo = pe.legajo
+    INNER JOIN maquinas m ON pr.id_maquina = m.id_maquina WHERE pr.estado = 0";
     $data = $this->selectAll($sql);
     return $data;   
   }
@@ -276,6 +327,50 @@ class PreventivosModel extends Query{
     $data = $this->selectAll($sql);
     return $data;
   }
+  public function registrarNotificacion(int $id_usuario, string $mensaje, int $rol_informado, string $tipo_notificacion) {
+    $this->id_usuario = $id_usuario;
+    $this->mensaje = $mensaje;
+    $this->rol_informado = $rol_informado;
+    $this->tipo_notificacion = $tipo_notificacion;
+    $sql = "INSERT INTO notificaciones (id_usuario, mensaje, rol_informado,tipo_notificacion) VALUES (?,?,?,?)";
+    $datos = array($id_usuario, $mensaje, $rol_informado, $tipo_notificacion);
+    $data = $this->save($sql,$datos);
+  }
+  public function obtenerNotificaciones($id_usuario) {
+    $this->id_usuario = $id_usuario;
+    $sql = "SELECT *, n.id AS notificacion_id FROM notificaciones n INNER JOIN usuario_roles ur ON n.rol_informado = ur.id_rol WHERE ur.id_usuario =  $id_usuario AND n.leido = FALSE";
+    $data = $this->selectAll($sql);
+    return $data;  
+  }
+  public function marcarComoLeidas($id_usuario) {
+    $this->id_usuario = $id_usuario;
+    $sql = "UPDATE notificaciones SET leido = TRUE WHERE id_usuario = ?";
+    $datos = array($this->id_usuario);
+    $data = $this->save($sql,$datos);
+  }
+  public function marcarNotificacionComoLeida($id_notificacion) {
+    $this->id_notificacion = $id_notificacion;
+    $sql = "UPDATE notificaciones SET leido = TRUE WHERE id = ?";
+    $datos = array($this->id_notificacion);
+    $success = $this->save($sql, $datos); // Asumiendo que tienes un método save para ejecutar consultas
+    return $success;
+  }
+  public function obtenerTareasPendientesAdmin() {
+    $sql = "SELECT * FROM preventivos WHERE estado = 1 OR estado = 2"; // Ajustar según tu esquema de base de datos
+    $data = $this->selectAll($sql);
+    return $data;
+  }
+  public function obtenerTareasPendientesSuper() {
+    $sql = "SELECT * FROM preventivos WHERE estado = 0"; // Ajustar según tu esquema de base de datos
+    $data = $this->selectAll($sql);
+    return $data;
+  }
+  public function getRolUsuario(int $id_usuario) {
+    $sql = "SELECT * FROM roles r INNER JOIN usuario_roles ur ON r.id = ur.id_rol WHERE ur.id_usuario = $id_usuario"; // Ajustar según tu esquema de base de datos
+    $data = $this->select($sql);
+    return $data; 
+  }
+
 
 }
 

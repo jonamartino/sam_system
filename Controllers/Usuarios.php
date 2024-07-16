@@ -9,6 +9,7 @@ class Usuarios extends Controller{
     }
     public function index(){
         $data['personas'] = $this->model->getPersona();
+        $data['roles'] = $this->model->getRoles();
         $this->views->getView($this, "index", $data);
     }
     public function listar(){
@@ -16,16 +17,18 @@ class Usuarios extends Controller{
         for ($i=0; $i < count($data); $i++){
             if ($data[$i]['estado'] == 1) {
                 $data[$i]['estado'] = '<span class="badge badge-success">Activo</span>';
+                $data[$i]['acciones'] = '<div>
+                    <button class= "btn btn-primary btn-sm" type="button" onclick="btnEditarUser('.$data[$i]['id'].');"><i class="fa-solid fa-user-pen"></i></button>
+                    <button class= "btn btn-danger btn-sm" type="button" onclick="btnEliminarUser('.$data[$i]['id'].');"><i class="fa-solid fa-user-slash"></i></button>                  
+                <div/>';
             }else{
                 $data[$i]['estado'] = '<span class="badge badge-danger">Inactivo</span>';
+                $data[$i]['acciones'] = '<div>
+                    <button class= "btn btn-primary btn-sm" type="button" onclick="btnEditarUser('.$data[$i]['id'].');"><i class="fa-solid fa-user-pen"></i></button>
+                    <button class= "btn btn-success btn-sm" type="button" onclick="btnReingresarUser('.$data[$i]['id'].');"><i class="fa-solid fa-user-check"></i></button>
+                <div/>';
             }
-            $data[$i]['acciones'] = '<div>
-            <button class= "btn btn-primary" type="button" onclick="btnEditarUser('.$data[$i]['id'].');"><i class="fa-solid fa-user-pen"></i></button>
-            <button class= "btn btn-danger" type="button" onclick="btnEliminarUser('.$data[$i]['id'].');"><i class="fa-solid fa-user-slash"></i></button>
-            <button class= "btn btn-success" type="button" onclick="btnReingresarUser('.$data[$i]['id'].');"><i class="fa-solid fa-user-check"></i></button>
-            <div/>';
         }
-        
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
         die();
     }
@@ -35,8 +38,9 @@ class Usuarios extends Controller{
         $clave = $_POST['clave'];
         $confirmar = $_POST['confirmar'];
         $id = $_POST['id'];
+        $id_rol = $_POST['rol'];
         $hash = hash("SHA256", $clave);
-        if(empty($usuario) || empty($legajo)){
+        if(empty($usuario) || empty($legajo) || empty($id_rol)){
             $msg = array('msg' => 'Todos los campos son obligatorios', 'icono' => 'warning');
         }else{
             if ($id == "") {
@@ -45,6 +49,8 @@ class Usuarios extends Controller{
                 }else{
                     $data = $this->model->registrarUsuario($usuario, $hash, $legajo);
                     if($data == "OK"){
+                        $user = $this->model->getUser($usuario);
+                        $data1 = $this->model->registraUsuarioRol($user,$id_rol);
                         $msg = array('msg' => 'Usuario registrado con éxito', 'icono' => 'success');
                     } else if ($data == "existe") {
                         $msg = array('msg' => 'El usuario ya existe', 'icono' => 'warning');
@@ -56,6 +62,8 @@ class Usuarios extends Controller{
         }else{
             $data = $this->model->modificarUsuario($usuario, $legajo, $id);
             if($data == "modificado"){
+                $data1 = $this->model->eliminaRolUsuario($id);
+                $data2 = $this->model->registraUsuarioRol($id,$id_rol);
                 $msg = array('msg' => 'El usuario ha sido modificado', 'icono' => 'success');
             } else { 
                 $msg = array('msg' => 'Error al modificar el usuario', 'icono' => 'warning');

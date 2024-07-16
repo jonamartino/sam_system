@@ -7,8 +7,7 @@ class Maquinas extends Controller{
         }
         parent::__construct();
     }
-    public function index()
-    {
+    public function index(){
         $id_usuario = $_SESSION['id_usuario'];
         $verificarAgregar = $this->model->verificarPermiso($id_usuario, 'agregar_maquina');
         $verificar = $this->model->verificarPermiso($id_usuario, 'listar_maquinas' );
@@ -21,8 +20,14 @@ class Maquinas extends Controller{
             header('Location: '.base_url.'Errors/permisos');
         }
     }
-    public function listar()
-    {
+    public function tareas(){
+        $id_usuario = $_SESSION['id_usuario'];
+        
+        $data['tipos'] = $this->model->getTipos();
+        $data['tipo_maquina'] = $this->model->getTipo();
+        $this->views->getView($this, "tareas", $data);
+    }
+    public function listar(){
         $id_usuario = $_SESSION['id_usuario'];
         $verificar = $this->model->verificarPermiso($id_usuario, 'modificar_maquina' );
         '<div>
@@ -34,8 +39,8 @@ class Maquinas extends Controller{
                 $data[$i]['estado'] = '<span class="badge badge-success">Activa</span>';
                 if (!empty($verificar)) {
                 $data[$i]['acciones'] ='<div>
-                <button class= "btn btn-primary" type="button" onclick="btnEditarMaquina('.$data[$i]['id_maquina'].')"><i class="fa-solid fa-user-pen"></i></button>
-                <button class= "btn btn-danger" type="button" onclick="btnEliminarMaquina('.$data[$i]['id_maquina'].')"><i class="fa-solid fa-user-slash"></i></button>
+                <button class= "btn btn-primary btn-sm" type="button" onclick="btnEditarMaquina('.$data[$i]['id_maquina'].')"><i class="fa-solid fa-user-pen"></i></button>
+                <button class= "btn btn-danger btn-sm" type="button" onclick="btnEliminarMaquina('.$data[$i]['id_maquina'].')"><i class="fa-solid fa-user-slash"></i></button>
                 <div/>';
                 } else {
                     $data[$i]['acciones'] = '<div></div>';
@@ -44,8 +49,8 @@ class Maquinas extends Controller{
                 $data[$i]['estado'] = '<span class="badge badge-danger">Inactiva</span>';
                 if (!empty($verificar)) {
                 $data[$i]['acciones'] ='<div>
-                <button class= "btn btn-primary" type="button" onclick="btnEditarMaquina('.$data[$i]['id_maquina'].')"><i class="fa-solid fa-user-pen"></i></button>
-                <button class= "btn btn-success" type="button" onclick="btnReingresarMaquina('.$data[$i]['id_maquina'].')"><i class="fa-solid fa-user-check"></i></button>
+                <button class= "btn btn-primary btn-sm" type="button" onclick="btnEditarMaquina('.$data[$i]['id_maquina'].')"><i class="fa-solid fa-user-pen"></i></button>
+                <button class= "btn btn-success btn-sm" type="button" onclick="btnReingresarMaquina('.$data[$i]['id_maquina'].')"><i class="fa-solid fa-user-check"></i></button>
                 <div/>';
                 } else {
                     $data[$i]['acciones'] = '<div></div>';
@@ -55,8 +60,24 @@ class Maquinas extends Controller{
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
         die();
     }
-    public function registrar()
-    {
+    public function listarTareasIndex(){
+        $id_usuario = $_SESSION['id_usuario'];
+        $verificar = $this->model->verificarPermiso($id_usuario, 'modificar_maquina' );
+        $data = $this->model->getTareasAll();
+        for ($i=0; $i < count($data); $i++){
+                if (!empty($verificar)) {
+                $data[$i]['acciones'] ='<div>
+                <button class= "btn btn-primary btn-sm" type="button" onclick="btnEditarTarea('.$data[$i]['id_tarea'].')"><i class="fa-solid fa-pen"></i></button>
+                <button class= "btn btn-danger btn-sm" type="button" onclick="btnEliminarTarea('.$data[$i]['id_tarea'].')"><i class="fa-solid fa-trash"></i></button>
+                <div/>';
+                } else {
+                    $data[$i]['acciones'] = '<div></div>';
+                }
+        }
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+        die();
+    }
+    public function registrar(){
         $id_tipo = $_POST['tipo'];
         $nombre = $_POST['nombre'] ;
         $celda_nombre = $_POST['celda_nombre'] ;
@@ -85,14 +106,11 @@ class Maquinas extends Controller{
         echo json_encode($msg, JSON_UNESCAPED_UNICODE);
         die();
     }
-
-
     public function editar(int $id_maquina){
         $data = $this->model->editarMaquina($id_maquina);
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
         die();
     } 
-
     public function eliminar(int $id_maquina){
         $data = $this->model->accionMaquina(0, $id_maquina);
         if ($data == 1) {
@@ -103,7 +121,6 @@ class Maquinas extends Controller{
         echo json_encode($msg, JSON_UNESCAPED_UNICODE);
         die();
     }
-
     public function reingresar(int $id_maquina){
         $data = $this->model->accionMaquina(1, $id_maquina);
         if ($data == 1) {
@@ -114,7 +131,26 @@ class Maquinas extends Controller{
         echo json_encode($msg, JSON_UNESCAPED_UNICODE);
         die();
     }
-
+    public function listarTareas(int $id_seleccion) {
+        $data = $this->model->getTareas($id_seleccion);
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+        die();
+    }   
+    public function editarTarea(int $id_tarea){
+        $data = $this->model->getTarea($id_tarea);
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+        die();
+    }    
+    public function eliminarTarea(int $id_tarea){
+        $data = $this->model->deleteTarea($id_tarea);
+        if ($data == 'OK') {
+            $msg = "ok";
+        } else {
+            $msg = "Error al eliminar la tarea";
+        }
+        echo json_encode($msg, JSON_UNESCAPED_UNICODE);
+        die();
+    }
     public function salir(){
         session_destroy();
         header("location: ".base_url);

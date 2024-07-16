@@ -3,7 +3,8 @@
     <li class="breadcrumb-item active" aria-current="page">Maquinas</li>
 </ol>
 <?php if ($data['verificarAgregar']): ?>
-<button class="btn btn-primary mb-2" type="button" onclick="frmMaquina();"><i class="fa-solid fa-user-plus"></i></button>
+<button class="btn btn-primary mb-2" type="button" onclick="frmMaquina();">Nueva máquina</button>
+
 <?php endif; ?>
 <div class="table-responsive-xl">
     <table class="table table-light w-100" id="tblMaquinas">
@@ -16,7 +17,7 @@
                 <th class="w-auto">Estado</th>   
                 <th></th> 
             </tr>
-        </thead>
+        </thead>    
         <tbody>
         </tbody>
     </table>
@@ -57,9 +58,12 @@
                         <?php } ?>
                         <select>
                     </div>
-                    <button class="btn btn-primary" type="button" onclick="registrarMaquina(event);" id="btn-accion">Registrar</button>
-                    <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Cancelar</button>
+
                 </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" type="button" onclick="registrarMaquina(event);" id="btn-accion">Registrar</button>
+                <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Cancelar</button>
             </div>
         </div>
     </div>

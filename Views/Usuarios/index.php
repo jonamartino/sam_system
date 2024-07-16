@@ -2,7 +2,7 @@
 <ol class="breadcrumb mb-4">
     <li class="breadcrumb-item active" aria-current="page">Usuarios</li>
 </ol>
-<button class="btn btn-primary mb-2" type="button" onclick="frmUsuario();"><i class="fa-solid fa-user-plus"></i></button>
+<button class="btn btn-primary mb-2 btn-sm" type="button" onclick="frmUsuario();"><i class="fa-solid fa-user-plus"></i> Agregar Usuario</button>
 <div class="table-responsive-xl">
     <table class="table table-light w-100" id="tblUsuarios">
         <thead class="thead-dark">
@@ -10,8 +10,8 @@
                 <th>#</th>
                 <th>Usuario</th>
                 <th>legajo</th>
-                <th>Nombre</th>
-                <th>Apellido</th>
+                <th>Nombre y Apellido</th>
+                <th>Rol</th>
                 <th>Estado</th>
                 <th></th>
             </tr>
@@ -39,7 +39,7 @@
                     <div class="form-group">
                         <label for="legajo">Legajo</label>
                         <select id="legajo" class="form-control" type="text" name="legajo" placeholder="Legajo">
-                        <label>Legajo</label>
+                        <option value="" disabled selected>Selecciona la persona asociada al usuario</option>
                         <?php foreach ($data['personas'] as $row){ ?>
                             <option value="<?php echo $row['legajo']; ?>"> <?php echo $row['legajo']," - ", $row['nombre'], " ", $row['apellido']; ?></option>
                             <?php } ?>
@@ -58,10 +58,21 @@
                                 <input id="confirmar" class="form-control" type="password" name="confirmar" placeholder="Confirmar Contraseña">
                             </div>
                         </div>
-                    </div>
-                    <button class="btn btn-primary" type="button" onclick="registrarUser(event);" id="btn-accion">Registrar</button>
-                    <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Cancelar</button>
+                    </div>     
+                    <div class="form-group">
+                        <label for="rol">Rol del usuario</label>
+                        <select id="rol" selected class="form-control" type="text" name="rol" placeholder="Tipo">
+                        <option value="" disabled selected>Selecciona un rol para el usuario</option>
+                            <?php foreach ($data['roles'] as $row) { ?>
+                                <option value="<?php echo $row['id']; ?>"><?php echo $row['id']," - ",$row['nombre']; ?> </option>
+                            <?php } ?>
+                        </select>
+                    </div>        
                 </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" type="button" onclick="registrarUser(event);" id="btn-accion">Registrar</button>
+                <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Cancelar</button>
             </div>
         </div>
     </div>

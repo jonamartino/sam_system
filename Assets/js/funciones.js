@@ -1,5 +1,5 @@
 // Tablas Usuarios, Maquinas
-let tblUsuarios, tblMaquinas, tblPersonas;
+let tblUsuarios, tblMaquinas, tblPersonas, tblTareas;
 document.addEventListener("DOMContentLoaded", function () {
     tblUsuarios = $('#tblUsuarios').DataTable({
         ajax: {
@@ -17,13 +17,39 @@ document.addEventListener("DOMContentLoaded", function () {
                 'data': 'legajo'
             },
             {
-                'data': 'nombre'
+                'data': 'nombre_completo'
             },
             {
-                'data': 'apellido'
+                'data': 'nombre_rol'
             },
             {
                 'data': 'estado'
+            },
+            {
+                'data': 'acciones'
+            }
+        ]
+    });
+
+})
+document.addEventListener("DOMContentLoaded", function () {
+    tblTareas = $('#tblTareas').DataTable({
+        ajax: {
+            url: base_url + "Maquinas/listarTareasIndex",
+            dataSrc: ''
+        },
+        columns: [
+            {
+                'data': 'id_tarea'
+            },
+            {
+                'data': 'nombre_tarea'
+            },
+            {
+                'data': 'tiempo_tarea'
+            },
+            {
+                'data': 'nombre_maquina'
             },
             {
                 'data': 'acciones'
@@ -90,9 +116,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
 })
-
 // Usuarios
-
 function frmUsuario() {
     document.getElementById("title").innerHTML = "Nuevo Usuario";
     document.getElementById("btn-accion").innerHTML = "Registrar";
@@ -116,6 +140,7 @@ function registrarUser(e) {
         http.send(new FormData(frm));
         http.onreadystatechange = function () {
             if (this.readyState == 4 && this.status == 200) {
+                console.log(this.responseText);
                 const res = JSON.parse(this.responseText);
                 $("#nuevo-usuario").modal("hide");
                 alertas(res.msg, res.icono);
@@ -137,6 +162,7 @@ function btnEditarUser(id) {
             document.getElementById("id").value = res.id;
             document.getElementById("usuario").value = res.usuario;
             document.getElementById("legajo").value = res.id_persona;
+            document.getElementById("rol").value = res.id_rol;
             console.log(document.getElementById("legajo"));
             console.log(res.id_persona);
             document.getElementById("claves").classList.add("d-none");
@@ -197,7 +223,6 @@ function btnReingresarUser(id) {
     });
 }
 // Fin Usuarios
-
 // Maquinas
 function frmMaquina() {
     document.getElementById("title").innerHTML = "Nueva Maquina";
@@ -206,6 +231,25 @@ function frmMaquina() {
     $("#nueva-maquina").modal("show");
     document.getElementById("id_maquina").value = "";
 
+}
+function frmTareaEditar(id_tarea) {
+    
+    console.log(id_tarea);
+    document.getElementById("frmTareaEditar").reset();
+      console.log(id_tarea.value);
+      const url = base_url + "Maquinas/editarTarea/" + id_tarea;
+      const http = new XMLHttpRequest();
+      http.open("GET", url, true);
+      http.send();
+      http.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+          const res = JSON.parse(this.responseText);
+          document.getElementById("id_tarea").value = res.id_tarea;
+          document.getElementById("nombre").value = res.nombre;
+          document.getElementById("tiempo").value = res.tiempo_tarea;
+          $("#editar-tarea").modal("show");
+        }
+      }
 }
 function registrarMaquina(e) {
     e.preventDefault();
@@ -264,6 +308,124 @@ function registrarMaquina(e) {
             }
         }
     }
+}
+function getTareasMaquinas() {
+    var id_seleccion = document.getElementById("id_tipo").value;
+    var selectTareas = document.getElementById("id_tareas");
+    console.log(selectTareas.value)
+    selectTareas.innerHTML = ''; // Limpiar el contenido actual
+    console.log(selectTareas.value);
+    if (id_seleccion) {
+      const url = base_url + "Maquinas/listarTareas/" + id_seleccion;
+      const http = new XMLHttpRequest();
+      http.open("GET", url, true);
+      http.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+          var response = JSON.parse(this.responseText);
+          console.log(response);
+          if (response && response.length > 0) {
+            // Iterar sobre las tareas recibidas y agregarlas al select
+            response.forEach(function (tareas) {
+              var option = document.createElement("option");
+              option.value = tareas.id_tareas;
+              option.textContent = tareas.nombre;
+              selectTareas.appendChild(option);
+            });
+          }
+        }
+      };
+      http.send();
+    }
+}
+function frmTareas() {
+    document.getElementById("title").innerHTML = "Nueva Tarea";
+    document.getElementById("btn-accion").innerHTML = "Registrar";
+    document.getElementById("frmTareas").reset();
+    document.getElementById("id_tipo").value = '';
+    $("#nueva-tarea").modal("show");
+}
+function registrarTareaMaquina(e) {
+    e.preventDefault();
+    const id_tipo = document.getElementById("id_tipo");
+    const nombre_tarea = document.getElementById("nombre_tarea");
+    const tiempo = document.getElementById("tiempo");
+  
+    console.log(id_tipo.value, nombre_tarea.value, tiempo.value);
+    if (id_tipo.value == "" || nombre_tarea.value == "" || tiempo.value == "" ) {
+      alertas('Todos los campos son obligatorios', 'warning');
+    } else {
+      const url = base_url + "Preventivos/registrarTarea";
+      const frm = document.getElementById("frmTareas");
+      const http = new XMLHttpRequest();
+      http.open("POST", url, true);
+      http.send(new FormData(frm));
+      http.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+            console.log(this.responseText);
+            const res = JSON.parse(this.responseText);
+            $("#nueva-tarea").modal("hide");
+            alertas(res.msg, res.icono);
+            tblTareas.ajax.reload();
+        }
+      }
+    }
+}
+function btnEditarTarea(id_tarea) {
+document.getElementById("title").innerHTML = "Modificar tarea";
+document.getElementById("btn-accion").innerHTML = "Modificar";
+const url = base_url + "Maquinas/editarTarea/" + id_tarea;
+const http1 = new XMLHttpRequest();
+http1.open("GET", url, true);
+http1.send();
+http1.onreadystatechange = function () {
+    if (this.readyState == 4 && this.status == 200) {
+        const res = JSON.parse(this.responseText);
+        document.getElementById("id_tipo").value = res.id_tipo;
+        document.getElementById("id_tarea").value = res.id_tarea;
+        document.getElementById("nombre_tarea").value = res.nombre;
+        document.getElementById("tiempo").value = res.tiempo_tarea;
+        $("#nueva-tarea").modal("show");
+
+    }
+}
+}
+function btnEliminarTarea(id_tarea) {
+    Swal.fire({
+        title: "¿Está seguro de eliminar la tarea?",
+        text: "Una vez eliminada no podrá ser recuperada",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Confirmar",
+        cancelButtonText: "Cancelar"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const url = base_url + "Maquinas/eliminarTarea/" + id_tarea;
+            const http = new XMLHttpRequest();
+            http.open("GET", url, true);
+            http.send();
+            http.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    const res = JSON.parse(this.responseText);
+                    if (res == "ok") {
+                        Swal.fire(
+                            'Exito',
+                            'La tarea ha sido eliminada',
+                            'success'
+                        )
+                        tblTareas.ajax.reload();
+                    } else {
+                        Swal.fire(
+                            'Error!',
+                            res,
+                            'error'
+                        );
+                    }
+                }
+            }
+        }
+    });
 }
 function btnEditarMaquina(id_maquina) {
     document.getElementById("title").innerHTML = "Actualizar Maquina";

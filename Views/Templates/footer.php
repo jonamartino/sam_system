@@ -2,12 +2,12 @@
 </main>
 <footer class="py-4 bg-light mt-auto">
     <div class="container-fluid px-4">
-        <div class="d-flex align-items-center justify-content-between small">
-            <div class="text-muted">Copyright &copy; Jonathan Martino 2023</div>
-            <div>
-                <a class="link-dark" href="#">Privacy Policy</a>
+        <div class="d-flex align-items-center justify-content-between">
+            <div class="text-muted small">Copyright &copy; Jonathan Martino 2023</div>
+            <div> 
+                <a class="link-dark" href="https://github.com/jonamartino/sam_system"><i class="fa-brands fa-github"></i></a>
                 &middot;
-                <a class="link-dark" href="#">Terms &amp; Conditions</a>
+                <a class="link-dark" href="https://www.linkedin.com/in/jonamartino/"><i class="fa-brands fa-linkedin"></i></a>
             </div>
         </div>
     </div>
