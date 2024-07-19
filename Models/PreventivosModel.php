@@ -356,12 +356,26 @@ class PreventivosModel extends Query{
     return $success;
   }
   public function obtenerTareasPendientesAdmin() {
-    $sql = "SELECT * FROM preventivos WHERE estado = 1 OR estado = 2"; // Ajustar según tu esquema de base de datos
+    $sql = "SELECT id_preventivo AS id, descripcion, 'P' AS tipo 
+    FROM preventivos 
+    WHERE estado = 1 OR estado = 2
+    UNION
+    SELECT o.id_orden AS id, p.descripcion, 'O' AS tipo 
+    FROM ordenes o 
+    INNER JOIN preventivos p ON o.preventivo = p.id_preventivo 
+    WHERE o.estado IS NULL"; // Ajustar según tu esquema de base de datos
     $data = $this->selectAll($sql);
     return $data;
   }
   public function obtenerTareasPendientesSuper() {
-    $sql = "SELECT * FROM preventivos WHERE estado = 0"; // Ajustar según tu esquema de base de datos
+    $sql = "SELECT id_preventivo AS id, descripcion, 'P' AS tipo 
+    FROM preventivos 
+    WHERE estado = 0
+    UNION
+    SELECT o.id_orden AS id, p.descripcion, 'O' AS tipo 
+    FROM ordenes o 
+    INNER JOIN preventivos p ON o.preventivo = p.id_preventivo 
+    WHERE o.estado = 1"; // Ajustar según tu esquema de base de datos
     $data = $this->selectAll($sql);
     return $data;
   }

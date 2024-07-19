@@ -30,7 +30,20 @@ class Preventivos extends Controller {
         }
     }
     public function pendientes() {
-        $this->views->getView($this, "pendientes");
+        $id_usuario = $_SESSION['id_usuario'];
+        $verificarAgregar = $this->model->verificarPermiso($id_usuario, 'agregar_preventivo');
+        $verificar = $this->model->verificarPermiso($id_usuario, 'listar_preventivos' );
+        if (!empty($verificar)) {
+            $data['verificarAgregar'] = !empty($verificarAgregar);
+            $data['maquinas'] = $this->model->getMaquinas();
+            $data['personas'] = $this->model->getPersonas();
+            $data['usuarios'] = $this->model->getUsuarios();
+            $data['frecuencia'] = $this->model->getFrecuencias();
+            $data['tipos'] = $this->model->getTipos();
+            $this->views->getView($this, "pendientes", $data);
+        } else {
+            header('Location: '.base_url.'Errors/permisos');
+        }
     }
     public function vencidos(){
       $this->views->getView($this, "vencidos");
@@ -202,7 +215,7 @@ class Preventivos extends Controller {
                             $validacionTarea = $this->model->registrarPreventivoTareas($id_tarea, $id_preventivo);                            
                         }
                     }
-                    $this->model->registrarNotificacion($id_usuario, "Preventivo $id_preventivo ha sido creado.", 3, 'pendiente');
+                    $this->model->registrarNotificacion($id_usuario, "Preventivo $id_preventivo pendiente de revisión.", 3, 'pendiente');
                     $msg = array('msg' => 'Preventivo creado', 'icono' => 'success');
                 } else if ($data == "existe") {
                     $msg = array('msg' => 'El preventivo ya existe', 'icono' => 'warning');
@@ -219,7 +232,7 @@ class Preventivos extends Controller {
                 foreach ($tareas as $id_tarea) {
                     $validacionTarea = $this->model->registrarPreventivoTareas($id_tarea, $id_preventivo);                            
                 }
-                $this->model->registrarNotificacion($id_usuario, "Preventivo $id_preventivo ha sido creado.", 3, 'pendiente');
+                $this->model->registrarNotificacion($id_usuario, "Preventivo $id_preventivo pendiente de revisión.", 3, 'pendiente');
                 $msg = array('msg' => 'Preventivo modificado', 'icono' => 'success');
             } else if ($data == "existe") {
                 $msg = "El preventivo ya existe";
@@ -324,6 +337,8 @@ class Preventivos extends Controller {
                     $validacionTarea = $this->model->registrarOrdenTareas($tarea['id_tareas'], $id_orden);                            
                 }
                 $data3 = $this->model->cargaOrdenPreventivo($id_orden, $id_preventivo);
+                $this->model->registrarNotificacion($usuario_alta, "Orden $id_orden ha sido creada.", 2, 'pendiente');
+
                 if($data3 == 'OK'){
                     $res = 'ok';
                 }

@@ -32,10 +32,10 @@
                         <span id="tasksCount" class="badge bg-danger"></span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" id="tasksDropdown" aria-labelledby="notificationDropdownToggle">
-                        <li><a class="dropdown-item" href="#!">Tareas Pendientes</a></li>
-                        <li><hr class="dropdown-divider" /></li>
-                        <!-- Las notificaciones se cargarán aquí -->
                     </ul>
+                    <ul class="dropdown-menu dropdown-menu-end" id="tasksDropdown1" aria-labelledby="notificationDropdownToggle">
+                    </ul>
+                    
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link me-2" href="#" id="notificationDropdownToggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">

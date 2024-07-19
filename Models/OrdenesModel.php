@@ -30,7 +30,6 @@ class OrdenesModel extends Query{
     $data = $this->selectAll($sql);
     return $data;
   }
-
   public function getOrdenesListar(){
     $sql = "SELECT o.id_orden, o.estado, p.fecha_programada as fecha, CONCAT(p.id_preventivo,' - ',p.descripcion) as prev, o.tiempo_estimado,
     CONCAT(pe.nombre,' ',pe.apellido) as nombre_apellido FROM ordenes o INNER JOIN personas pe 
@@ -38,8 +37,23 @@ class OrdenesModel extends Query{
     $data = $this->selectAll($sql);
     return $data;
   }
-  
-
+  public function getOrdenesPendientesAdmin(){
+    $sql = "SELECT *, o.estado, p.fecha_programada as fecha, CONCAT(p.id_preventivo,' - ',p.descripcion) as prev, CONCAT(pe.nombre,' ',pe.apellido) as nombre_apellido FROM ordenes o INNER JOIN personas pe ON o.id_tecnico = pe.legajo
+    INNER JOIN preventivos p ON o.preventivo = p.id_preventivo WHERE o.estado IN (0, 2, 3) OR o.estado IS NULL";
+    $data = $this->selectAll($sql);
+    return $data;
+  }
+  public function getOrdenesPendientesSuper(){
+    $sql = "SELECT *, o.estado, p.fecha_programada as fecha, CONCAT(p.id_preventivo,' - ',p.descripcion) as prev, CONCAT(pe.nombre,' ',pe.apellido) as nombre_apellido FROM ordenes o INNER JOIN personas pe ON o.id_tecnico = pe.legajo
+    INNER JOIN preventivos p ON o.preventivo = p.id_preventivo WHERE o.estado = 1";
+    $data = $this->selectAll($sql);
+    return $data;
+  }
+  public function getRolUsuario(int $id_usuario) {
+    $sql = "SELECT * FROM roles r INNER JOIN usuario_roles ur ON r.id = ur.id_rol WHERE ur.id_usuario = $id_usuario"; // Ajustar según tu esquema de base de datos
+    $data = $this->select($sql);
+    return $data; 
+  }
   public function getPreventivos(){
     $sql = "SELECT *, pr.estado, CONCAT(fecha_programada,' - ',hora_programada) as fecha, CONCAT(m.id_maquina,' - ',m.nombre) as maq, CONCAT(pe.nombre,' ',pe.apellido) as nombre_apellido FROM preventivos pr INNER JOIN personas pe ON pr.legajo = pe.legajo
     INNER JOIN maquinas m ON pr.id_maquina = m.id_maquina";
@@ -120,8 +134,15 @@ class OrdenesModel extends Query{
     }
     return $res;
   }
-
-  
+  public function registrarNotificacion(int $id_usuario, string $mensaje, int $rol_informado, string $tipo_notificacion) {
+    $this->id_usuario = $id_usuario;
+    $this->mensaje = $mensaje;
+    $this->rol_informado = $rol_informado;
+    $this->tipo_notificacion = $tipo_notificacion;
+    $sql = "INSERT INTO notificaciones (id_usuario, mensaje, rol_informado,tipo_notificacion) VALUES (?,?,?,?)";
+    $datos = array($id_usuario, $mensaje, $rol_informado, $tipo_notificacion);
+    $data = $this->save($sql,$datos);
+  }
   public function accionOrden(int $estado, int $id_orden){
     $this->id_orden = $id_orden;
     $this->estado = $estado;

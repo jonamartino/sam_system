@@ -446,6 +446,7 @@ function btnCargarOrden(id_preventivo) {
             })
             console.log("recargar");
             tblPreventivos.ajax.reload();
+            tblPreventivosPendientes.ajax.reload();
           } else {
             Swal.fire(
               'Error!',
@@ -562,16 +563,16 @@ document.addEventListener("DOMContentLoaded", function() {
                     let item = document.createElement('li');
                     let tipoClase = '';
                     if (notificacion.tipo_notificacion === 'aprobado') {
-                        tipoClase = 'alert-success'; // Bootstrap class for success text
+                        tipoClase = 'alert-success fs-5 me-3'; // Bootstrap class for success text
                     } else if (notificacion.tipo_notificacion === 'rechazado') {
-                        tipoClase = 'alert-danger'; // Bootstrap class for danger text
+                        tipoClase = 'alert-danger fs-5 me-3'; // Bootstrap class for danger text
                     } else if (notificacion.tipo_notificacion === 'pendiente') {
-                        tipoClase = 'alert-primary'; // Bootstrap class for primary text
+                        tipoClase = 'alert-primary fs-5 me-3'; // Bootstrap class for primary text
                     }
                     item.innerHTML = `
                     <div class="dropdown-item ${tipoClase} d-flex justify-content-between align-items-center">
-                        <span>${notificacion.mensaje}-</span>
-                        <i class="fa fa-trash" onclick="marcarComoLeida(${notificacion.notificacion_id}, this)"></i>
+                        <span>${notificacion.mensaje}</span>
+                        <i class="fa fa-trash" onclick="marcarComoLeida(${notificacion.notificacion_id},this)"></i>
                     </div>`;
                     notificationDropdown.appendChild(item);
                     if (!notificacion.leido) {
@@ -597,7 +598,9 @@ document.addEventListener("DOMContentLoaded", function() {
         .then(data => {
             let tasksCount = document.getElementById('tasksCount');
             let tasksDropdown = document.getElementById('tasksDropdown');
+            let tasksDropdown1 = document.getElementById('tasksDropdown1');
             tasksDropdown.innerHTML = "";
+            tasksDropdown1.innerHTML = "";
 
             // Agregar el título "Tareas Pendientes"
             let titulo = document.createElement('li');
@@ -613,7 +616,13 @@ document.addEventListener("DOMContentLoaded", function() {
                 tasksCount.textContent = data.length;
                 data.forEach(tarea => {
                     let item = document.createElement('li');
-                    item.innerHTML = `<a class="dropdown-item" href="/sam_system/Preventivos/pendientes">${tarea.id_preventivo} - ${tarea.descripcion}</a>`;
+                    console.log(tarea.tipo);
+                    if(tarea.tipo == 'O'){
+                      item.innerHTML = `<a class="dropdown-item" href="/sam_system/Ordenes/pendientes">${tarea.tipo}${tarea.id} - ${tarea.descripcion}</a>`;
+                    } else {
+                      item.innerHTML = `<a class="dropdown-item" href="/sam_system/Preventivos/pendientes">${tarea.tipo}${tarea.id} - ${tarea.descripcion}</a>`;
+                    }
+
                     tasksDropdown.appendChild(item);
                 });
             } else {

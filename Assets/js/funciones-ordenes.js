@@ -67,6 +67,40 @@ document.addEventListener("DOMContentLoaded", function () {
 
 })
 
+let tblOrdenesPendientes;
+document.addEventListener("DOMContentLoaded", function () {
+  tblOrdenesPendientes = $('#tblOrdenesPendientes').DataTable({
+    ajax: {
+      url: base_url + "Ordenes/listarPendientes",
+      dataSrc: ''
+    },
+    columns: [
+      {
+        'data': 'id_orden'
+      },
+      {
+        'data': 'prev'
+      },
+      {
+        'data': 'nombre_apellido'
+      },
+      {
+        'data': 'fecha'
+      },
+      {
+        'data': 'tiempo_estimado'
+      },
+      {
+        'data': 'estado'
+      },
+      {
+        'data': 'acciones'
+      }
+    ]
+  });
+
+})
+
 // Función para obtener las tareas asociadas a la orden seleccionada
 function getTareasdeOrden() {
   var id_seleccion = document.getElementById("id_orden").value;
@@ -169,6 +203,7 @@ function registrarOrden(e) {
         $("#nueva-orden").modal("hide");
         alertas(res.msg, res.icono);
         tblOrdenes.ajax.reload();
+        tblOrdenesPendientes.ajax.reload();
       }
     }
   }
@@ -196,9 +231,11 @@ function btnRechazarOrden(id_orden) {
         if (this.readyState == 4 && this.status == 200) {
           const res = JSON.parse(this.responseText);
           tblOrdenes.ajax.reload();
+          tblOrdenesPendientes.ajax.reload();
           alertas(res.msg, res.icono);
         }
       }
+      $('#nueva-orden').modal('hide');
     }
   });
 }
@@ -355,6 +392,7 @@ function btnAprobarOrden(e,id_orden) {
         if (this.readyState == 4 && this.status == 200) {
           const res = JSON.parse(this.responseText);
           tblOrdenes.ajax.reload();
+          tblOrdenesPendientes.ajax.reload();
           alertas(res.msg, res.icono);
         }
       }
