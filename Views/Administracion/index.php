@@ -31,6 +31,18 @@
                             <input id="direccion" class="form-control" type="text" name="direccion" value="<?php echo $data['direccion'] ?>">
                     </div>
                 </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                            <label for="direccion">Ubicación Backup</label>
+                            <input id="direccion" class="form-control" type="text" name="direccion" value="<?php echo $data['db_ubicacion'] ?>">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                            <label for="direccion">Nombre Base de Datos</label>
+                            <input id="direccion" class="form-control" type="text" name="direccion" value="<?php echo $data['db_name'] ?>">
+                    </div>
+                </div>
             </div>
             
             <div class="form-group">

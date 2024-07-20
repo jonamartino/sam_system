@@ -721,7 +721,6 @@ function alertas(mensaje, icono) {
         timer: 3000
     })
 }
-
 function modificarSistema(){
     const frm = document.getElementById('frmSistema');
     const url = base_url + "Administracion/modificar";
@@ -735,4 +734,91 @@ function modificarSistema(){
       }
     }
 }
+document.addEventListener('DOMContentLoaded', function() {
+    // Función para cargar la configuración y llenar el modal
+    function loadConfig() {
+        fetch(base_url + "Administracion/getConfig")
+            .then(response => response.json())
+            .then(config => {
+                // Rellenar los campos del modal con la configuración
+                document.getElementById('databaseName').value = config.db_name;
+                document.getElementById('location').value = config.db_ubicacion;
+                document.getElementById('defaultLocation').textContent = config.db_ubicacion;
+                
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    // Mostrar u ocultar los campos según la opción seleccionada
+    document.querySelectorAll('input[name="backupRestoreOption"]').forEach(function(radio) {
+        radio.addEventListener('change', function() {
+            const isRestore = document.getElementById('restoreOption').checked;
+            document.getElementById('backupLocationDiv').style.display = isRestore ? 'none' : 'block';
+            document.getElementById('restoreFileDiv').style.display = isRestore ? 'block' : 'none';
+            document.getElementById('backupButton').style.display = isRestore ? 'none' : 'block';
+            document.getElementById('restoreButton').style.display = isRestore ? 'block' : 'none';
+        });
+    });
+
+    // Evento para el botón de backup
+    document.getElementById('backupButton').addEventListener('click', function() {
+        const location = document.getElementById('location').value;
+        const databaseName = document.getElementById('databaseName').value;
+
+        fetch(base_url + "Administracion/backup", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: `location=${encodeURIComponent(location)}&databaseName=${encodeURIComponent(databaseName)}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.message);
+        })
+        .catch(error => console.error('Error:', error));
+    });
+
+    // Evento para el botón de restore
+    document.getElementById('restoreButton').addEventListener('click', function() {
+        const fileInput = document.getElementById('restoreFile');
+        const databaseName = document.getElementById('databaseName').value;
+
+        if (!fileInput.files.length) {
+            alert('Por favor, selecciona un archivo para restaurar.');
+            return;
+        }
+
+        const file = fileInput.files[0];
+        const formData = new FormData();
+        formData.append('databaseName', databaseName);
+        formData.append('restoreFile', file);
+
+        // Mostrar indicador de carga
+        document.getElementById('loadingIndicator').style.display = 'block';
+
+        fetch(base_url + "Administracion/restore", {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.message);
+            // Ocultar indicador de carga
+            document.getElementById('loadingIndicator').style.display = 'none';
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            // Ocultar indicador de carga
+            document.getElementById('loadingIndicator').style.display = 'none';
+        });
+    });
+
+    // Cargar configuración al mostrar el modal
+    var backupRestoreModal = document.getElementById('backupRestoreModal');
+    backupRestoreModal.addEventListener('show.bs.modal', function (event) {
+        loadConfig();
+    });
+});
+
 

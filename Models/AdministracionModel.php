@@ -79,6 +79,11 @@ class AdministracionModel extends Query{
     $data = $this->select($sql);
     return $data;
     }
+    public function getConfig(){
+        $sql = "SELECT * FROM sistema LIMIT 1";
+        $data = $this->select($sql);
+        return $data;
+        }
     
     public function verificarPermiso(int $id_usuario, string $nombre){
         $sql = "SELECT p.id, p.nombre, ur.id_usuario FROM usuario_roles ur INNER JOIN roles r ON ur.id_rol = r.id INNER JOIN

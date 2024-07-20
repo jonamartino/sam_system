@@ -33,8 +33,7 @@ class Personas extends Controller{
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
         die();
     }
-    public function registrar()
-    {
+    public function registrar(){
         $legajo = $_POST["legajo"];
         $dni = $_POST["dni"];
         $nombre = $_POST["nombre"];

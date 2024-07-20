@@ -51,6 +51,7 @@
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                         <li><a class="dropdown-item" href="#!">Perfil</a></li>
                         <li><a class="dropdown-item" href="#!">Activity Log</a></li>
+                        <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#backupRestoreModal">Backup</a></li>
                         <li><hr class="dropdown-divider" /></li>
                         <li><a class="dropdown-item" href="<?php echo base_url;?>Usuarios/salir">Cerrar Sesion</a></li>
                     </ul>
@@ -113,6 +114,65 @@
             </div>
             <div id="layoutSidenav_content">
                 <main>
+                <div class="modal fade" id="backupRestoreModal" tabindex="-1" aria-labelledby="backupRestoreModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="backupRestoreModalLabel">Backup/Restore Database</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <!-- Botón de dos posiciones para backup/restore -->
+                                <div class="form-group">
+                                    <label for="">Acción</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="backupRestoreOption" id="backupOption" value="backup" checked>
+                                    <label class="form-check-label" for="backupOption">
+                                        Guardar Backup
+                                    </label>
+                                </div>
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="radio" name="backupRestoreOption" id="restoreOption" value="restore">
+                                    <label class="form-check-label" for="restoreOption">
+                                        Restaurar Backup
+                                    </label>
+                                </div>
+                                </div>
+                                <!-- Input para el nombre de la base de datos -->
+                                <div class="mb-3">
+                                    <label for="databaseName" class="form-label">Nombre base datos</label>
+                                    <input type="text" class="form-control" id="databaseName" placeholder="Nombre de la base de datos">
+                                </div>
+                                <!-- Input para seleccionar la ubicación del backup -->
+                                <div class="mb-3" id="backupLocationDiv">
+                                    <label for="location" class="form-label">Location</label>
+                                    <input type="text" class="form-control" id="location" placeholder="C:\sam_system\bkp\">
+                                </div>
+                                <!-- Input para seleccionar el archivo a restaurar (solo en modo restore) -->
+                                <div class="mb-3" id="restoreFileDiv" style="display: none;">
+                                    <label for="restoreFile" class="form-label">Seleccionar archivo para restaurar</label>
+                                    <input type="file" class="form-control" id="restoreFile" accept=".sql">
+                                    <small id="restoreLocationHint" class="form-text text-muted">
+                                        Default: <span id="defaultLocation"></span>
+                                    </small>
+                                </div>
+                                <!-- Indicador de carga -->
+                                <div id="loadingIndicator" style="display: none; text-align: center;">
+                                    <div class="spinner-border" role="status">
+                                        <span class="visually-hidden">Cargando...</span>
+                                    </div>
+                                    <p>Restaurando base de datos...</p>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary" id="backupButton">Backup</button>
+                                <button type="button" class="btn btn-primary" id="restoreButton" style="display: none;">Restore</button>
+                            </div>
+                    </div>
+                </div>
+</div>
+
                     <div class="container-fluid mt-2">
 
 
