@@ -260,6 +260,7 @@ function btnCompletarOrden(id_orden) {
         if (this.readyState == 4 && this.status == 200) {
           const res = JSON.parse(this.responseText);
           tblOrdenes.ajax.reload();
+          tblOrdenesPendientes.ajax.reload();
           alertas(res.msg, res.icono);
         }
       }

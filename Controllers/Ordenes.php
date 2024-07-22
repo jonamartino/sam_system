@@ -1,7 +1,5 @@
 <?php
 require_once 'config/app/Controller.php';
-
-// Incluir las clases de estado
 require_once 'StatesOrdenes/Aprobado.php';
 require_once 'StatesOrdenes/Pendiente.php';
 require_once 'StatesOrdenes/Ingresado.php';
@@ -10,7 +8,6 @@ require_once 'StatesOrdenes/Vencido.php';
 require_once 'StatesOrdenes/Completado.php';
 class Ordenes extends Controller{
   private $estado;
-
   public function __construct(){
     session_start();
     if (empty($_SESSION['activo'])) {

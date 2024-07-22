@@ -146,7 +146,7 @@ class OrdenesModel extends Query{
   public function accionOrden(int $estado, int $id_orden){
     $this->id_orden = $id_orden;
     $this->estado = $estado;
-    $sql = "UPDATE ordenes SET estado = ? WHERE id_orden = ?";
+    $sql = "UPDATE ordenes SET estado = ?, fecha_final = NOW() WHERE id_orden = ?";
     $datos = array($this->estado, $this->id_orden);
     $data = $this->save($sql,$datos);
     return $data;
@@ -164,7 +164,7 @@ class OrdenesModel extends Query{
   public function accionPreventivo(int $estado, int $id_preventivo){
     $this->id_preventivo = $id_preventivo;
     $this->estado = $estado;
-    $sql = "UPDATE preventivos SET estado = ? WHERE id_preventivo = ?";
+    $sql = "UPDATE preventivos SET estado = ?, fecha_final = NOW() WHERE id_preventivo = ?";
     $datos = array($this->estado, $this->id_preventivo);
     $data = $this->save($sql,$datos);
     return $data;
@@ -182,7 +182,7 @@ class OrdenesModel extends Query{
     $this->fecha_programada = $fecha_programada;
     
     // Actualizar la tabla preventivos
-    $sql = "UPDATE preventivos SET estado = ?, fecha_programada = ? WHERE id_preventivo = ?";
+    $sql = "UPDATE preventivos SET estado = ?, fecha_programada = ?, fecha_final = NOW() WHERE id_preventivo = ?";
     $datos = array($this->estado, $this->fecha_programada, $this->id_preventivo);
     $data = $this->save($sql, $datos);
     return $data;

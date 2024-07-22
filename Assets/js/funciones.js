@@ -711,7 +711,6 @@ function btnReingresarPersona(legajo) {
         }
     });
 }
-
 function alertas(mensaje, icono) {
     Swal.fire({
         position: 'top-center',
@@ -820,5 +819,37 @@ document.addEventListener('DOMContentLoaded', function() {
         loadConfig();
     });
 });
+document.addEventListener('DOMContentLoaded', function() {
+    // Cargar datos iniciales
+    updateData(document.getElementById('monthSelector').value);
+
+    // Agregar el evento de cambio al desplegable
+    document.getElementById('monthSelector').addEventListener('change', function() {
+        var selectedMonth = this.value;
+        updateData(selectedMonth);
+    });
+});
+
+function updateData(month) {
+    fetch('/sam_system/Administracion/getIndicadoresDelMes/' + month)
+        .then(response => response.json())
+        .then(data => {
+            console.log(data); // Verificar los datos en la consola
+            // Actualizar los elementos del DOM con los nuevos datos
+            document.querySelector('#preventivoCompletado').textContent = data.preventivos_completados_mes ? data.preventivos_completados_mes.total : '0';
+            document.querySelector('#preventivoCancelados').textContent = data.preventivos_cancelados_mes ? data.preventivos_cancelados_mes.total : '0';
+            document.querySelector('#preventivoVencidos').textContent = data.preventivos_vencidos_mes ? data.preventivos_vencidos_mes.total : '0';
+            document.querySelector('#preventivoServicio').textContent = data.preventivos_servicio_mes ? data.preventivos_servicio_mes.total : '0';
+            document.querySelector('#ordenesCompletadas').textContent = data.ordenes_completadas_mes ? data.ordenes_completadas_mes.total : '0';
+            document.querySelector('#ordenesCanceladas').textContent = data.ordenes_canceladas_mes ? data.ordenes_canceladas_mes.total : '0';
+            document.querySelector('#tareasIncompletasMes').textContent = data.ordenes_tareas_incompletas_mes ? data.ordenes_tareas_incompletas_mes.total : '0';
+            document.querySelector('#ordenesServicio').textContent = data.ordenes_servicio_mes ? data.ordenes_servicio_mes.total : '0';
+            
+            
+
+        })
+        .catch(error => console.error('Error:', error));
+}
+
 
 

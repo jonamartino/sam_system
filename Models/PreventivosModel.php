@@ -363,7 +363,7 @@ class PreventivosModel extends Query{
     SELECT o.id_orden AS id, p.descripcion, 'O' AS tipo 
     FROM ordenes o 
     INNER JOIN preventivos p ON o.preventivo = p.id_preventivo 
-    WHERE o.estado IS NULL"; // Ajustar según tu esquema de base de datos
+    WHERE o.estado IS NULL OR o.estado = 2 OR o.estado = 3"; // Ajustar según tu esquema de base de datos
     $data = $this->selectAll($sql);
     return $data;
   }

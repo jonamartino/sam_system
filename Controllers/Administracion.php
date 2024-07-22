@@ -8,6 +8,28 @@ class Administracion extends Controller {
         }
         parent::__construct();
     }
+    public function modificar(){
+        $db_name = $_POST['db_name'];
+        $razon_social = $_POST['razon_social'] ;
+        $nombre = $_POST['nombre'] ;
+        $telefono = $_POST['telefono'] ;
+        $direccion = $_POST['direccion'] ;
+        $db_ubicacion = $_POST['db_ubicacion'] ;
+        $mensaje = $_POST['mensaje'] ;
+        $id = $_POST['id'];
+        if(empty($razon_social) || empty($nombre) || empty($telefono) || empty($direccion) || empty($db_name) || empty($db_ubicacion)){
+            $msg = "Todos los campos son obligatorios";
+        }else{
+            $data = $this->model->modificar($razon_social, $nombre, $telefono, $direccion, $db_name, $db_ubicacion, $mensaje, $id);
+            if($data == "modificado"){
+                $msg = array('msg' => 'Datos del Sistema actualizados', 'icono' => 'success');
+            } else { 
+                $msg = array('msg' => 'Error al actualizar los datos del Sistema', 'icono' => 'danger');
+            }
+        }
+        echo json_encode($msg, JSON_UNESCAPED_UNICODE);
+        die();
+    }
     public function index() {
         $id_usuario = $_SESSION['id_usuario'];
         $verificar = $this->model->verificarPermiso($id_usuario, 'configuracion' );
@@ -30,8 +52,7 @@ class Administracion extends Controller {
         $data['ordenes_activas'] = $this->model->getOrdenesActivas();
         $data['ordenes_inactivas'] = $this->model->getOrdenesInactivas();
         $data['ordenes_vencidas'] = $this->model->getOrdenesVencidas();
-        $data['ordenes_avencer'] = $this->model->getOrdenesAVencer();
-        
+        $data['ordenes_avencer'] = $this->model->getTareasIncompletas();   
         $this->views->getView($this, "home", $data);
     }
     public function reportePreventivosVencidos(){
@@ -44,7 +65,6 @@ class Administracion extends Controller {
         echo json_encode($data);
         die();
     }
-
     public function backup() {
         $location = $_POST['location'];
         $databaseName = $_POST['databaseName'];
@@ -108,6 +128,31 @@ class Administracion extends Controller {
             file_put_contents($logFile, "Error al restaurar la base de datos: " . date('Y-m-d H:i:s') . "\n", FILE_APPEND);
             echo json_encode(['success' => false, 'message' => 'Error al restaurar la base de datos.']);
         }
+        die();
+    }
+    public function getIndicadoresDelMes(int $mes) {
+        $data['preventivos_completados_mes'] = $this->model->getPreventivosCompletados($mes);
+        $data['preventivos_cancelados_mes'] = $this->model->getPreventivosCancelados($mes);
+        $data['preventivos_vencidos_mes'] = $this->model->getPreventivosVencidosMes($mes);
+        $a = $data['preventivos_completados_mes']['total'];
+        $b = $data['preventivos_vencidos_mes']['total'];
+        if (($b+$a) > 0) {
+            $data['preventivos_servicio_mes']['total'] = ($a/($b+$a)) * 100;
+        } else {
+            $data['preventivos_servicio_mes']['total'] = 100; // Valor por defecto si no hay preventivos vencidos
+        }   
+        $data['ordenes_completadas_mes'] = $this->model->getOrdenesCompletadas($mes);
+        $data['ordenes_canceladas_mes'] = $this->model->getOrdenesCanceladas($mes);
+        $data['ordenes_tareas_incompletas_mes'] = $this->model->getTareasIncompletasMes($mes);
+        $c = $data['ordenes_completadas_mes']['total'];
+        $d = $data['ordenes_canceladas_mes']['total'];
+        if (($c + $d) > 0) {
+            $data['ordenes_servicio_mes']['total'] = ($c / ($c + $d)) * 100;
+        } else {
+            $data['ordenes_servicio_mes']['total'] = 100; // Valor por defecto si no hay preventivos vencidos
+        }
+        
+        echo json_encode($data);
         die();
     }
     

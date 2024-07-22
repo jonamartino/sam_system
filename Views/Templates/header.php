@@ -51,7 +51,7 @@
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                         <li><a class="dropdown-item" href="#!">Perfil</a></li>
                         <li><a class="dropdown-item" href="#!">Activity Log</a></li>
-                        <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#backupRestoreModal">Backup</a></li>
+                        <li><a class="dropdown-item" href="#!" data-bs-toggle="modal" data-bs-target="#backupRestoreModal">Backup</a></li>
                         <li><hr class="dropdown-divider" /></li>
                         <li><a class="dropdown-item" href="<?php echo base_url;?>Usuarios/salir">Cerrar Sesion</a></li>
                     </ul>
